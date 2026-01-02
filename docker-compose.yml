@@ -1,0 +1,66 @@
+# =============================================================================
+# MACROSTASIS - Docker Compose
+# =============================================================================
+# Configuración para frontend + backend con Cloudflare Tunnel (parhelion)
+#
+# Servicios:
+# - frontstasis: Frontend Angular (puerto 80)
+# - backstasis: Backend WebSocket Node.js (puerto 80 -> 3081)
+# - chessengine: Motor de ajedrez Python (interno, puerto 5000)
+#
+# Red: parhelion-network (para Cloudflare Tunnel)
+#
+# @author Carlos Eduardo Juárez Ricardo
+# @version 3.0.0
+# =============================================================================
+
+services:
+  frontstasis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frontstasis
+    restart: unless-stopped
+    ports:
+      - "3080:80"
+    networks:
+      - parhelion-network
+    labels:
+      - "com.docker.compose.project=macrostasis"
+      - "traefik.enable=false"
+
+  backstasis:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backstasis
+    restart: unless-stopped
+    ports:
+      - "3081:80"
+    depends_on:
+      chessengine:
+        condition: service_healthy
+    networks:
+      - parhelion-network
+    env_file:
+      - ./backend/.env
+    environment:
+      - CHESS_ENGINE_URL=http://chessengine:5000
+      - NODE_ENV=${NODE_ENV:-development}
+    labels:
+      - "com.docker.compose.project=macrostasis"
+
+  chessengine:
+    build:
+      context: ./chessengine
+      dockerfile: Dockerfile
+    container_name: chessengine
+    restart: unless-stopped
+    networks:
+      - parhelion-network
+    labels:
+      - "com.docker.compose.project=macrostasis"
+
+networks:
+  parhelion-network:
+    external: true

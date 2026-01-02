@@ -1,0 +1,570 @@
+<!--
+================================================================================
+MACROSTASIS PORTFOLIO - Main Template
+================================================================================
+
+Template principal del portfolio con layout responsivo.
+
+ESTRUCTURA:
+- background-layer: Fondo animado con gradiente aurora
+- mask-layer: Contenedor principal blanco
+  - social-icons: Iconos de redes en esquinas superiores
+  - brand-desktop: Layout desktop (META [LOGO] CODEX)
+  - nav-menu: Menú horizontal de navegación
+  - brand-mobile: Layout móvil vertical
+  - nav-menu-mobile: Barra de navegación inferior móvil
+  - scroll-indicator: Flechas animadas de scroll
+- content-layer: Espacio para scroll (200vh)
+
+@author Carlos Eduardo Juárez Ricardo
+@version 2.0.0
+================================================================================
+-->
+
+<!-- Fondo Animado -->
+<div class="background-layer"></div>
+
+<!-- Contenido Principal -->
+<div class="mask-layer" [class.dispersing]="activeSection()" [class.returning]="isReturning()">
+
+  <!-- REDES SOCIALES - Iconos en las esquinas SUPERIORES -->
+  <div class="social-icons" [class.visible]="menuVisible()" [style.opacity]="menuOpacity()">
+    <!-- Izquierda superior -->
+    <a href="https://www.linkedin.com/in/metacodex/" target="_blank" rel="noopener" class="social-icon left-1">
+      <div class="social-mask" style="-webkit-mask-image: url('/linkedin.svg'); mask-image: url('/linkedin.svg');">
+      </div>
+    </a>
+    <a href="https://github.com/MetaCodeX" target="_blank" rel="noopener" class="social-icon left-2">
+      <div class="social-mask" style="-webkit-mask-image: url('/github.svg'); mask-image: url('/github.svg');"></div>
+    </a>
+    <!-- Selector de idioma - Debajo de GitHub -->
+    <button class="social-icon left-3 lang-toggle-corner" (click)="toggleLanguage()"
+      [attr.aria-label]="currentLang() === 'es' ? 'Switch to English' : 'Cambiar a Español'">
+      <img [src]="currentLang() === 'es' ? '/flag-mx.svg' : '/flag-us.svg'" [alt]="currentLang() === 'es' ? 'ES' : 'EN'"
+        class="lang-flag-corner">
+    </button>
+    <!-- Derecha superior -->
+    <a href="https://www.instagram.com/metacodehex/" target="_blank" rel="noopener" class="social-icon right-1">
+      <div class="social-mask" style="-webkit-mask-image: url('/instagram.svg'); mask-image: url('/instagram.svg');">
+      </div>
+    </a>
+    <a href="mailto:carlosjuarex@outlook.es" class="social-icon right-2">
+      <div class="social-mask" style="-webkit-mask-image: url('/email.svg'); mask-image: url('/email.svg');"></div>
+    </a>
+  </div>
+
+  <!-- DESKTOP: META [LOGO] CODEX -->
+  <div class="brand-desktop" translate="no">
+    <div class="brand-column left" [style.transform]="'translateX(' + leftX() + '%)'" [style.opacity]="opacity()">
+      <span class="brand-text">Meta</span>
+      <div class="brand-info">
+        <p class="info-name">Carlos Eduardo Juárez Ricardo</p>
+        <p class="info-title notranslate" translate="no">Full Stack Developer Architect</p>
+        <p class="info-title notranslate" translate="no">AI Agent Engineer</p>
+      </div>
+    </div>
+
+    <div class="brand-logo"
+      [style.transform]="'scale(' + logoScale() + ') translateX(' + logoTranslateX() + 'px) translateY(' + logoTranslateY() + '%)'">
+    </div>
+
+    <div class="brand-column right" [style.transform]="'translateX(' + rightX() + '%)'" [style.opacity]="opacity()">
+      <span class="brand-text">CodeX</span>
+      <p class="brand-subtitle notranslate" translate="no">PORTFOLIO</p>
+    </div>
+  </div>
+
+  <!-- MENÚ HORIZONTAL - Aparece debajo del logo -->
+  <nav class="nav-menu" translate="no" [class.visible]="menuVisible()" [style.opacity]="menuOpacity()">
+    <a href="#portafolio" class="nav-item nav-1" (click)="onNavClick('portafolio', $event)">{{ t('nav.portfolio') }}</a>
+    <span class="nav-separator">•</span>
+    <a href="#sobre-mi" class="nav-item nav-2" (click)="onNavClick('sobre-mi', $event)">{{ t('nav.about') }}</a>
+    <span class="nav-separator">•</span>
+    <a href="#stack" class="nav-item nav-3" (click)="onNavClick('stack', $event)">{{ t('nav.stack') }}</a>
+    <span class="nav-separator">•</span>
+    <a href="#arquitectura" class="nav-item nav-4" (click)="onNavClick('arquitectura', $event)">{{ t('nav.architecture')
+      }}</a>
+    <span class="nav-separator">•</span>
+    <a href="#contacto" class="nav-item nav-5" (click)="onNavClick('contacto', $event)">{{ t('nav.contact') }}</a>
+    <span class="nav-separator">•</span>
+    <!-- Selector de idioma minimalista -->
+    <button class="lang-toggle" (click)="toggleLanguage()"
+      [attr.aria-label]="currentLang() === 'es' ? 'Switch to English' : 'Cambiar a Español'">
+      <img [src]="currentLang() === 'es' ? '/flag-mx.svg' : '/flag-us.svg'"
+        [alt]="currentLang() === 'es' ? 'Español' : 'English'" class="lang-flag">
+    </button>
+  </nav>
+
+  <!-- MOBILE -->
+  <div class="brand-mobile" translate="no">
+    <div class="mobile-side left" [style.transform]="'translateX(' + leftX() + '%)'" [style.opacity]="opacity()">
+      <p class="info-name">Carlos Eduardo</p>
+      <p class="info-name">Juárez Ricardo</p>
+      <p class="info-title notranslate" translate="no">Full Stack Developer Architect</p>
+      <p class="info-title notranslate" translate="no">AI Agent Engineer</p>
+    </div>
+
+    <div class="mobile-center">
+      <span class="vertical-letter" [style.opacity]="opacity()">M</span>
+      <span class="vertical-letter" [style.opacity]="opacity()">E</span>
+      <span class="vertical-letter" [style.opacity]="opacity()">T</span>
+      <span class="vertical-letter" [style.opacity]="opacity()">A</span>
+      <div class="brand-logo-mobile" [style.transform]="'scale(' + logoScaleMobile() + ')'"></div>
+      <span class="vertical-letter" [style.opacity]="opacity()">C</span>
+      <span class="vertical-letter" [style.opacity]="opacity()">O</span>
+      <span class="vertical-letter" [style.opacity]="opacity()">D</span>
+      <span class="vertical-letter" [style.opacity]="opacity()">E</span>
+      <span class="vertical-letter" [style.opacity]="opacity()">X</span>
+    </div>
+
+    <div class="mobile-side right" [style.transform]="'translateX(' + rightX() + '%)'" [style.opacity]="opacity()">
+      <p class="brand-subtitle notranslate" translate="no">PORTFOLIO</p>
+    </div>
+  </div>
+
+  <!-- MENÚ MÓVIL - Barra inferior -->
+  <nav class="nav-menu-mobile" translate="no" [class.visible]="menuVisible()" [style.opacity]="menuOpacity()">
+    <a href="#portafolio" class="nav-item-mobile nav-1" (click)="onNavClick('portafolio', $event)">{{ t('nav.portfolio')
+      }}</a>
+    <a href="#sobre-mi" class="nav-item-mobile nav-2" (click)="onNavClick('sobre-mi', $event)">{{ t('nav.about') }}</a>
+    <a href="#stack" class="nav-item-mobile nav-3" (click)="onNavClick('stack', $event)">{{ t('nav.stack.short') }}</a>
+    <a href="#arquitectura" class="nav-item-mobile nav-4" (click)="onNavClick('arquitectura', $event)">{{
+      t('nav.architecture.short') }}</a>
+    <a href="#contacto" class="nav-item-mobile nav-5" (click)="onNavClick('contacto', $event)">{{ t('nav.contact')
+      }}</a>
+    <button class="lang-toggle-mobile" (click)="toggleLanguage()">
+      <img [src]="currentLang() === 'es' ? '/flag-mx.svg' : '/flag-us.svg'" [alt]="currentLang() === 'es' ? 'ES' : 'EN'"
+        class="lang-flag-mobile">
+    </button>
+  </nav>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator" [style.opacity]="opacity()">
+    <span class="scroll-arrow"></span>
+    <span class="scroll-arrow"></span>
+    <span class="scroll-arrow"></span>
+  </div>
+
+</div>
+
+<!-- HEADER DE SECCIÓN - Aparece cuando una sección está activa (excepto contacto que tiene su propio botón) -->
+@if (activeSection() && activeSection() !== 'contacto') {
+<div class="section-header" [class.exiting]="isReturning()" [attr.data-section]="activeSection()">
+  <button class="back-button" (click)="onBackClick()" aria-label="Volver al menú">
+    <div class="back-arrow"></div>
+  </button>
+  <span class="section-title" [class]="'section-' + activeSection()">
+    {{ currentLang() === 'es' ? 'Volver al Menú' : 'Back to Menu' }}
+  </span>
+</div>
+}
+
+<!-- Espacio para scroll -->
+<main class="content-layer">
+  <div style="height: 200vh;"></div>
+</main>
+
+
+<!-- ========== SECCIÓN PORTAFOLIO - Sistema Solar ========== -->
+@if (activeSection() === 'portafolio') {
+<section class="portfolio-section">
+
+  <!-- Sistema Solar - Sale del lado izquierdo -->
+  <div class="solar-system">
+    <!-- Núcleo/Sol -->
+    <div class="sun"></div>
+
+    <!-- Órbitas con planetas - posiciones aleatorias -->
+    <div class="orbit orbit-1" [style.animation-delay]="'-' + orbitOffsets()[0] + 's'">
+      <div class="planet planet-1" [style.animation-delay]="'-' + orbitOffsets()[0] + 's'"></div>
+    </div>
+    <div class="orbit orbit-2" [style.animation-delay]="'-' + orbitOffsets()[1] + 's'">
+      <div class="planet planet-2" [style.animation-delay]="'-' + orbitOffsets()[1] + 's'"></div>
+    </div>
+    <div class="orbit orbit-3" [style.animation-delay]="'-' + orbitOffsets()[2] + 's'">
+      <div class="planet planet-3" [style.animation-delay]="'-' + orbitOffsets()[2] + 's'"></div>
+    </div>
+    <div class="orbit orbit-4" [style.animation-delay]="'-' + orbitOffsets()[3] + 's'">
+      <div class="planet planet-4" [style.animation-delay]="'-' + orbitOffsets()[3] + 's'"></div>
+    </div>
+    <div class="orbit orbit-5" [style.animation-delay]="'-' + orbitOffsets()[4] + 's'">
+      <div class="planet planet-5" [style.animation-delay]="'-' + orbitOffsets()[4] + 's'"></div>
+    </div>
+    <div class="orbit orbit-6" [style.animation-delay]="'-' + orbitOffsets()[5] + 's'">
+      <div class="planet planet-6" [style.animation-delay]="'-' + orbitOffsets()[5] + 's'"></div>
+    </div>
+  </div>
+
+  <!-- Contenido de texto en el frente -->
+  <div class="portfolio-content">
+
+    <!-- Proyecto activo -->
+    <div class="project-display" [class.animating]="isAnimating()">
+      <h3 class="project-name">{{ projects[activeProject()].title }}</h3>
+      <p class="project-subtitle">{{ t(projects[activeProject()].i18nSubtitle) }}</p>
+      <p class="project-description">{{ t(projects[activeProject()].i18nDesc) }}</p>
+
+      <!-- Stack tecnológico con iconos SVG -->
+      <div class="stack-icons">
+        @for (tech of projects[activeProject()].stack; track tech) {
+        <div class="stack-icon" [attr.data-tech]="tech" [attr.data-tooltip]="stackLabels[tech] || tech">
+          <div class="stack-icon-inner" [style.--icon-url]="'url(/stack/' + tech + '.svg)'"></div>
+        </div>
+        }
+      </div>
+
+      <!-- Botones de enlaces -->
+      @if (projects[activeProject()].github || projects[activeProject()].website) {
+      <div class="project-links">
+        @if (projects[activeProject()].github) {
+        <a [href]="projects[activeProject()].github" target="_blank" rel="noopener" class="project-link github">
+          <div class="link-icon github-icon"></div>
+          <span>{{ t('btn.github') }}</span>
+        </a>
+        }
+        @if (projects[activeProject()].website) {
+        <a [href]="projects[activeProject()].website" target="_blank" rel="noopener" class="project-link website">
+          <div class="link-icon web-icon"></div>
+          <span>{{ t('btn.website') }}</span>
+        </a>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Navegación -->
+    <div class="project-nav">
+      <button class="nav-arrow prev" (click)="onProjectPrev()" aria-label="Anterior">
+        <div class="arrow-icon"></div>
+      </button>
+      <span class="project-counter">{{ activeProject() + 1 }} / {{ projects.length }}</span>
+      <button class="nav-arrow next" (click)="onProjectNext()" aria-label="Siguiente">
+        <div class="arrow-icon"></div>
+      </button>
+    </div>
+  </div>
+
+</section>
+}
+
+<!-- ========== SECCIÓN SOBRE MI - Logo 3D ========== -->
+@if (activeSection() === 'sobre-mi') {
+<section class="about-section">
+
+  <!-- Logo rotando en 3D - Sigue al scroll -->
+  <div class="about-logo-container">
+    <div class="about-logo-3d"></div>
+  </div>
+
+  <!-- Contenido de texto con scroll -->
+  <div class="about-content">
+    <h2 class="about-title">{{ t('section.about') }}</h2>
+
+    <div class="about-intro">
+      <p class="about-greeting">{{ t('about.greeting') }} <strong>Carlos Eduardo Juárez Ricardo</strong></p>
+      <p class="about-alias">(A.k.a. MetaCodeX)</p>
+      <p class="about-tagline">Full Stack Developer Architect & AI Agent Engineer</p>
+      <p class="about-personal">{{ t('about.personal') }}</p>
+      <p class="about-languages">{{ t('about.languages') }}</p>
+    </div>
+
+    <div class="about-text">
+      <p class="about-profile">{{ t('about.profile') }}</p>
+
+      <h3 class="about-section-title">{{ t('about.expertise.title') }}</h3>
+      <p class="about-list">{{ t('about.expertise.list') }}</p>
+
+      <h3 class="about-section-title">{{ t('about.experience.title') }}</h3>
+      <p class="about-list">{{ t('about.experience.list') }}</p>
+
+      <p class="about-achievement">{{ t('about.achievement') }}</p>
+
+      <p class="about-philosophy">{{ t('about.philosophy') }}</p>
+    </div>
+  </div>
+
+</section>
+}
+
+<!-- ========== SECCIÓN MI STACK - Animación Dinámica ========== -->
+@if (activeSection() === 'stack') {
+<section class="stack-section" (mouseenter)="startStackRotation()" (mouseleave)="stopStackRotation()">
+
+  <!-- Marquesinas de fondo - 5 filas alternadas -->
+  <div class="stack-marquees">
+    <!-- Fila 1: Izquierda -->
+    <div class="stack-marquee row-1">
+      <div class="marquee-track left">
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Fila 2: Derecha -->
+    <div class="stack-marquee row-2">
+      <div class="marquee-track right">
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Fila 3: Izquierda -->
+    <div class="stack-marquee row-3">
+      <div class="marquee-track left">
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Fila 4: Derecha -->
+    <div class="stack-marquee row-4">
+      <div class="marquee-track right">
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Fila 5: Izquierda -->
+    <div class="stack-marquee row-5">
+      <div class="marquee-track left">
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+        @for (stack of allStacks; track stack) {
+        <div class="marquee-icon" [style.mask-image]="getMaskUrl(stack)" [style.-webkit-mask-image]="getMaskUrl(stack)">
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal con gráficas laterales -->
+  <div class="stack-content">
+
+    <!-- Gráfica izquierda - Nivel de Habilidad -->
+    <div class="stack-stat left">
+      <span class="stat-label">{{ currentLang() === 'es' ? 'Nivel' : 'Level' }}</span>
+      <div class="stat-bar-container">
+        <div class="stat-bar" [style.height.%]="stackStats[allStacks[activeStack()]]?.skill || 0"></div>
+      </div>
+      <span class="stat-value">{{ getSkillLevel(stackStats[allStacks[activeStack()]]?.skill || 0) }}</span>
+    </div>
+
+    <!-- Centro - SVG Principal -->
+    <div class="stack-main">
+      <div class="stack-hero" [class.transitioning]="stackTransitioning()">
+        <!-- Icono principal -->
+        <div class="stack-icon-large" [style.mask-image]="getMaskUrl(allStacks[activeStack()])"
+          [style.-webkit-mask-image]="getMaskUrl(allStacks[activeStack()])"></div>
+
+        <!-- Nombre con estrella de favorito -->
+        <div class="stack-name-row">
+          @if (stackStats[allStacks[activeStack()]]?.favorite) {
+          <span class="stack-favorite">★</span>
+          }
+          <h2 class="stack-name">{{ stackLabels[allStacks[activeStack()]] }}</h2>
+        </div>
+
+        <!-- Badges de categoría y uso en una fila -->
+        <div class="stack-badges">
+          <span class="stack-category">{{ stackStats[allStacks[activeStack()]]?.category }}</span>
+          <span class="stack-usage">{{ getUsageLabel(stackStats[allStacks[activeStack()]]?.usage || 'active') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfica derecha - Años de Uso -->
+    <div class="stack-stat right">
+      <span class="stat-label">{{ currentLang() === 'es' ? 'Años' : 'Years' }}</span>
+      <div class="stat-bar-container">
+        <div class="stat-bar years" [style.height.%]="(stackStats[allStacks[activeStack()]]?.years || 0) * 16.67"></div>
+      </div>
+      <span class="stat-value">{{ stackStats[allStacks[activeStack()]]?.years || 0 }}</span>
+    </div>
+  </div>
+
+  <!-- Botones de navegación (fuera del content para posición absoluta) -->
+  <div class="stack-nav">
+    <button class="stack-nav-btn prev" (click)="prevStack()" aria-label="Previous">‹</button>
+    <span class="stack-counter">{{ activeStack() + 1 }} / {{ allStacks.length }}</span>
+    <button class="stack-nav-btn next" (click)="nextStack()" aria-label="Next">›</button>
+  </div>
+
+  <!-- Barra de progreso inferior -->
+  <div class="stack-progress-container">
+    <div class="stack-progress-bar" [style.width.%]="stackProgress()"></div>
+  </div>
+
+  <!-- Título de la sección -->
+  <div class="stack-header">
+    <h2 class="stack-title">{{ t('section.stack') }}</h2>
+    <p class="stack-subtitle">{{ currentLang() === 'es' ? 'Tecnologías que domino' : 'Technologies I master' }}</p>
+  </div>
+
+</section>
+}
+
+<!-- ========== SECCIÓN ARQUITECTURA ========== -->
+@if (activeSection() === 'arquitectura') {
+<section class="arch-section">
+  <div class="arch-header">
+    <h2 class="arch-title">{{ currentLang() === 'es' ? 'Arquitectura' : 'Architecture' }}</h2>
+    <p class="arch-subtitle">{{ currentLang() === 'es' ? 'Próximamente...' : 'Coming soon...' }}</p>
+  </div>
+</section>
+}
+<!-- ========== SECCIÓN CONTACTO - Tablero Dividido ========== -->
+@if (activeSection() === 'contacto') {
+<section class="contact-section" [style.--hue]="chessService.colors().hue"
+  [style.--complement-hue]="chessService.colors().complementHue">
+
+  <!-- ===== DESKTOP: División Vertical (izquierda/derecha) ===== -->
+
+  <!-- MITAD IZQUIERDA: Columnas e-h (índices 4-7) -->
+  <div class="chess-half left-half desktop-only">
+    @for (row of chessService.leftHalf(); track $index; let rankIndex = $index) {
+    <div class="chess-row">
+      @for (square of row; track $index; let fileIndex = $index) {
+      <div class="chess-square" [class.light]="(rankIndex + fileIndex + 4) % 2 === 0"
+        [class.dark]="(rankIndex + fileIndex + 4) % 2 !== 0"
+        [class.animating-to]="isAnimatingTo(rankIndex, fileIndex + 4)">
+        @if (square.piece) {
+        <div class="chess-piece" [class.white-piece]="square.color === 'w'" [class.black-piece]="square.color === 'b'"
+          [style.--piece-svg]="'url(/chess/' + square.color + square.piece + '.svg)'">
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- ===== MÓVIL: División Horizontal (arriba/abajo) ===== -->
+
+  <!-- MITAD SUPERIOR: Filas 0-3 (negras) -->
+  <div class="chess-half top-half mobile-only">
+    @for (row of chessService.topHalf(); track $index; let rankIndex = $index) {
+    <div class="chess-row">
+      @for (square of row; track $index; let fileIndex = $index) {
+      <div class="chess-square" [class.light]="(rankIndex + fileIndex) % 2 === 0"
+        [class.dark]="(rankIndex + fileIndex) % 2 !== 0" [class.animating-to]="isAnimatingTo(rankIndex, fileIndex)">
+        @if (square.piece) {
+        <div class="chess-piece" [class.white-piece]="square.color === 'w'" [class.black-piece]="square.color === 'b'"
+          [style.--piece-svg]="'url(/chess/' + square.color + square.piece + '.svg)'">
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- CENTRO: Información de Contacto -->
+  <div class="contact-center">
+    <h2 class="contact-title">{{ t('section.contact') }}</h2>
+    <p class="contact-tagline">{{ currentLang() === 'es' ? '¿Listo para jugar?' : 'Ready to play?' }}</p>
+
+    <div class="contact-links">
+      <a href="mailto:carlosjuarex@outlook.es" class="contact-link">
+        <div class="contact-icon email-icon"></div>
+        <span>carlosjuarex&#64;outlook.es</span>
+      </a>
+      <a href="https://www.linkedin.com/in/metacodex/" target="_blank" rel="noopener" class="contact-link">
+        <div class="contact-icon linkedin-icon"></div>
+        <span>LinkedIn</span>
+      </a>
+      <a href="https://github.com/MetaCodeX" target="_blank" rel="noopener" class="contact-link">
+        <div class="contact-icon github-icon"></div>
+        <span>GitHub</span>
+      </a>
+    </div>
+
+    <!-- Botón de CV -->
+    <a href="/CV_CARLOS_EDUARDO_JUAREZ_RICARDO_ENG.pdf" download class="cv-download-btn">
+      <span class="cv-icon">📄</span>
+      <span>{{ currentLang() === 'es' ? 'Descargar CV' : 'Download CV' }}</span>
+    </a>
+
+    <!-- Estado de la partida -->
+    <div class="game-status">
+      @if (chessService.isConnected()) {
+      <span class="status-indicator online"></span>
+      <span class="move-counter">{{ currentLang() === 'es' ? 'Movimiento' : 'Move' }} #{{ chessService.moveCount()
+        }}</span>
+      } @else {
+      <span class="status-indicator offline"></span>
+      <span class="connecting-text">{{ currentLang() === 'es' ? 'Conectando...' : 'Connecting...' }}</span>
+      }
+    </div>
+
+    <!-- Botón Volver al Menú -->
+    <button class="back-to-menu-btn" (click)="onBackClick()">
+      <span class="back-arrow">←</span>
+      <span>{{ currentLang() === 'es' ? 'Volver al Menú' : 'Back to Menu' }}</span>
+    </button>
+  </div>
+
+  <!-- DESKTOP: MITAD DERECHA: Columnas a-d (índices 0-3) -->
+  <div class="chess-half right-half desktop-only">
+    @for (row of chessService.rightHalf(); track $index; let rankIndex = $index) {
+    <div class="chess-row">
+      @for (square of row; track $index; let fileIndex = $index) {
+      <div class="chess-square" [class.light]="(rankIndex + fileIndex) % 2 === 0"
+        [class.dark]="(rankIndex + fileIndex) % 2 !== 0" [class.animating-to]="isAnimatingTo(rankIndex, fileIndex)">
+        @if (square.piece) {
+        <div class="chess-piece" [class.white-piece]="square.color === 'w'" [class.black-piece]="square.color === 'b'"
+          [style.--piece-svg]="'url(/chess/' + square.color + square.piece + '.svg)'">
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- MÓVIL: MITAD INFERIOR: Filas 4-7 (blancas) -->
+  <div class="chess-half bottom-half mobile-only">
+    @for (row of chessService.bottomHalf(); track $index; let rankIndex = $index) {
+    <div class="chess-row">
+      @for (square of row; track $index; let fileIndex = $index) {
+      <div class="chess-square" [class.light]="(rankIndex + 4 + fileIndex) % 2 === 0"
+        [class.dark]="(rankIndex + 4 + fileIndex) % 2 !== 0"
+        [class.animating-to]="isAnimatingTo(rankIndex + 4, fileIndex)">
+        @if (square.piece) {
+        <div class="chess-piece" [class.white-piece]="square.color === 'w'" [class.black-piece]="square.color === 'b'"
+          [style.--piece-svg]="'url(/chess/' + square.color + square.piece + '.svg)'">
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+</section>
+}

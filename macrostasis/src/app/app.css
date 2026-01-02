@@ -1,0 +1,3984 @@
+/**
+ * =============================================================================
+ * MACROSTASIS PORTFOLIO - Estilos Principales
+ * =============================================================================
+ * 
+ * Estética: "Into the Dream" (Vaporwave/City Pop minimalista)
+ * - Fondo blanco con gradiente aurora boreal animado
+ * - Tipografía Montserrat limpia y elegante
+ * - Animaciones parallax suaves al scroll
+ * 
+ * SECCIONES:
+ * 1. Keyframes (animaciones aurora, scroll bounce)
+ * 2. Capas base (fondo animado, contenedor principal)
+ * 3. Layout Desktop (META [LOGO] CODEX)
+ * 4. Tipografía y Logo (gradientes, máscaras SVG)
+ * 5. Menú de Navegación (horizontal, gradientes únicos por botón)
+ * 6. Iconos de Redes Sociales (esquinas superiores)
+ * 7. Scroll Indicator (flechas animadas)
+ * 8. Layout Mobile (barra inferior, iconos)
+ * 9. Capa de contenido (espacio para scroll)
+ * 
+ * @author Carlos Eduardo Juárez Ricardo
+ * @version 2.0.0
+ * =============================================================================
+ */
+
+/* =============================================================================
+   1. KEYFRAMES - Animaciones
+   ============================================================================= */
+
+/** Gradiente animado que simula aurora boreal */
+@keyframes aurora {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/** Animación de rebote para las flechas de scroll */
+@keyframes scrollBounce {
+    0% {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(3px);
+    }
+}
+
+/* =============================================================================
+   1.5. PROTECCIÓN GOOGLE TRANSLATE
+   Previene que la traducción automática rompa los estilos de gradiente
+   ============================================================================= */
+
+/** Clase para textos que no deben traducirse */
+.notranslate {
+    /* Mantener estilos originales incluso cuando Google Translate modifica el DOM */
+    unicode-bidi: isolate;
+}
+
+/** Prevenir que font-tags de Google Translate rompan el gradiente */
+.brand-text font,
+.nav-item font,
+.nav-item-mobile font,
+.vertical-letter font {
+    background: inherit !important;
+    -webkit-background-clip: inherit !important;
+    background-clip: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+}
+
+/* =============================================================================
+   1.6. ANIMACIONES DE TRANSICIÓN DE SECCIÓN
+   Optimizadas para rendimiento con GPU acceleration
+   ============================================================================= */
+
+/** Preparar elementos para animación (GPU acceleration) */
+.brand-logo,
+.nav-menu,
+.nav-menu-mobile,
+.social-icons,
+.section-header {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
+
+/** Dispersión de elementos al entrar a una sección */
+.mask-layer.dispersing .brand-logo,
+.mask-layer.dispersing .brand-desktop,
+.mask-layer.dispersing .brand-mobile,
+.mask-layer.dispersing .nav-menu,
+.mask-layer.dispersing .nav-menu-mobile,
+.mask-layer.dispersing .social-icons,
+.mask-layer.dispersing .scroll-indicator {
+    opacity: 0 !important;
+    transform: translate3d(0, 0, 0) scale(0.9) !important;
+    pointer-events: none !important;
+    transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+}
+
+/** Reaparición rápida de elementos al volver al menú */
+.mask-layer:not(.dispersing) .brand-logo,
+.mask-layer:not(.dispersing) .brand-desktop,
+.mask-layer:not(.dispersing) .brand-mobile,
+.mask-layer:not(.dispersing) .nav-menu,
+.mask-layer:not(.dispersing) .nav-menu-mobile,
+.mask-layer:not(.dispersing) .social-icons,
+.mask-layer:not(.dispersing) .scroll-indicator {
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/** Header de sección flotante */
+.section-header {
+    position: fixed;
+    top: 2rem;
+    right: 3rem;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: slideInFromRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/** Botón de regreso - Solo SVG clickeable */
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.back-button:hover {
+    transform: scale(1.1);
+}
+
+.back-button:active {
+    transform: scale(0.95);
+}
+
+/** SVG de flecha con gradiente aurora */
+.back-arrow {
+    width: 28px;
+    height: 28px;
+    -webkit-mask-image: url('/arrow-left.svg');
+    mask-image: url('/arrow-left.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+}
+
+/** Título de sección - el texto usa el gradiente como "molde" */
+.section-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background-size: 400% 400%;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: aurora 6s ease infinite;
+}
+
+/** Gradientes por sección - aplicados a título Y flecha */
+.section-portafolio,
+[data-section="portafolio"] .back-arrow {
+    background: linear-gradient(-45deg, #ff6b6b, #ee7752, #feca57);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+}
+
+.section-sobre-mi,
+[data-section="sobre-mi"] .back-arrow {
+    background: linear-gradient(-45deg, #e73c7e, #f093fb, #f5576c);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+}
+
+.section-stack,
+[data-section="stack"] .back-arrow {
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+}
+
+.section-arquitectura,
+[data-section="arquitectura"] .back-arrow {
+    background: linear-gradient(-45deg, #23d5ab, #4ecdc4, #a8e6cf);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+}
+
+.section-contacto,
+[data-section="contacto"] .back-arrow {
+    background: linear-gradient(-45deg, #ffecd2, #fcb69f, #ff9a9e);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+}
+
+/** Animación de salida (regreso al menú) - rápida y fluida */
+.section-header.exiting {
+    animation: slideOutToRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/** Keyframes para transiciones */
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translate3d(60px, 0, 0) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+@keyframes slideOutToRight {
+    from {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate3d(60px, 0, 0) scale(0.9);
+    }
+}
+
+/** Responsive: Header de sección en móvil */
+@media (max-width: 768px) {
+    .section-header {
+        top: 1rem;
+        right: 1rem;
+        gap: 0.75rem;
+    }
+
+    .back-button {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+    }
+}
+
+/* =============================================================================
+   2. CAPAS BASE
+   ============================================================================= */
+
+/** Capa 0: Fondo animado (z-index: 0) */
+.background-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+}
+
+/** Capa 1: Contenedor principal (z-index: 1) */
+.mask-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    overflow: hidden;
+}
+
+/* =============================================================================
+   3. LAYOUT DESKTOP
+   ============================================================================= */
+
+/** Contenedor flex horizontal: META [LOGO] CODEX */
+.brand-desktop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+/** Columnas de texto (META/CODEX) con animación de salida suave */
+.brand-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-self: flex-start;
+    margin-top: 2.5rem;
+    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        opacity 0.3s ease-out;
+}
+
+.brand-column.left {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.brand-column.right {
+    align-items: flex-start;
+    text-align: left;
+}
+
+/* =============================================================================
+   4. TIPOGRAFÍA Y LOGO
+   ============================================================================= */
+
+/** Texto grande META/CODEX con gradiente aurora */
+.brand-text {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 8vw, 6rem);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    /* Texto con gradiente animado */
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.brand-info {
+    margin-top: 0.5rem;
+}
+
+.info-name {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: clamp(0.5rem, 1.2vw, 0.85rem);
+    color: #333;
+    margin: 0;
+}
+
+.info-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    font-size: clamp(0.45rem, 1vw, 0.7rem);
+    color: #666;
+    margin: 0.15rem 0 0 0;
+}
+
+.brand-subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: clamp(0.5rem, 1.2vw, 0.85rem);
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 0.5rem;
+}
+
+/** Logo SVG con máscara - crece y se centra durante el scroll */
+.brand-logo {
+    width: clamp(100px, 15vw, 200px);
+    height: clamp(125px, 19vw, 250px);
+    flex-shrink: 0;
+    align-self: flex-start;
+    /* Fondo con gradiente aurora */
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+    /* Máscara SVG del logo */
+    -webkit-mask-image: url('/path1.svg');
+    mask-image: url('/path1.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    /* Transición suave para parallax */
+    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/** Ocultar layout mobile en desktop */
+.brand-mobile {
+    display: none;
+}
+
+/* =============================================================================
+   5. MENÚ DE NAVEGACIÓN - Horizontal Profesional
+   ============================================================================= */
+
+/** Menú Desktop - Horizontal centrado debajo del logo */
+.nav-menu {
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.nav-menu.visible {
+    pointer-events: auto;
+}
+
+/** Items del menú - Texto con gradiente, una sola línea */
+.nav-item {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: clamp(1.1rem, 1.4vw, 1.4rem);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    /* Gradiente aurora animado */
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Efecto al presionar - escala hacia abajo */
+.nav-item:active {
+    transform: scale(0.95);
+}
+
+/* Gradientes únicos por botón al hover */
+.nav-1:hover {
+    background: linear-gradient(-45deg, #ff6b6b, #ee7752, #feca57);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.nav-2:hover {
+    background: linear-gradient(-45deg, #e73c7e, #f093fb, #f5576c);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.nav-3:hover {
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.nav-4:hover {
+    background: linear-gradient(-45deg, #23d5ab, #4ecdc4, #a8e6cf);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.nav-5:hover {
+    background: linear-gradient(-45deg, #ffecd2, #fcb69f, #ff9a9e);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+/** Separadores - Puntos decorativos */
+.nav-separator {
+    color: #ccc;
+    font-size: 0.4rem;
+    opacity: 0.4;
+}
+
+/* =============================================================================
+   SELECTOR DE IDIOMA - Botón minimalista con bandera
+   ============================================================================= */
+
+/** Desktop - Toggle en menú horizontal */
+.lang-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.lang-toggle:hover {
+    transform: scale(1.15);
+}
+
+.lang-flag {
+    width: 24px;
+    height: 18px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.2s ease;
+}
+
+.lang-toggle:hover .lang-flag {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/** Mobile - Toggle en barra inferior */
+.lang-toggle-mobile {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lang-flag-mobile {
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* =============================================================================
+   ICONOS DE REDES SOCIALES - Esquinas con gradiente aurora
+   ============================================================================= */
+
+.social-icons {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.social-icons.visible {
+    pointer-events: auto;
+}
+
+.social-icon {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.15);
+}
+
+.social-mask {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+/* Posiciones en las esquinas SUPERIORES */
+.social-icon.left-1 {
+    left: 2rem;
+    top: 2rem;
+}
+
+.social-icon.left-2 {
+    left: 2rem;
+    top: 4.5rem;
+}
+
+/* Selector de idioma - Debajo de GitHub */
+.social-icon.left-3 {
+    left: 2rem;
+    top: 7rem;
+}
+
+.lang-toggle-corner {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.lang-flag-corner {
+    width: 22px;
+    height: 16px;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.lang-toggle-corner:hover .lang-flag-corner {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.social-icon.right-1 {
+    right: 2rem;
+    top: 2rem;
+}
+
+.social-icon.right-2 {
+    right: 2rem;
+    top: 4.5rem;
+}
+
+/** Menú Móvil - Botón flotante minimalista */
+.nav-menu-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    /* Ocultar menú desktop en móvil */
+    .nav-menu {
+        display: none;
+    }
+
+    /* Mostrar iconos sociales en móvil - en esquinas */
+    .social-icons {
+        display: block;
+    }
+
+    .social-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .social-icon.left-1 {
+        left: 1rem;
+        top: 1rem;
+    }
+
+    .social-icon.left-2 {
+        left: 1rem;
+        top: 3rem;
+    }
+
+    .social-icon.right-1 {
+        right: 1rem;
+        top: 1rem;
+    }
+
+    .social-icon.right-2 {
+        right: 1rem;
+        top: 3rem;
+    }
+
+    /* Menú móvil: barra compacta en la parte inferior */
+    .nav-menu-mobile {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.7rem 0.4rem;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .nav-menu-mobile.visible {
+        pointer-events: auto;
+    }
+
+    /* Items como botones más grandes */
+    .nav-item-mobile {
+        font-family: "Montserrat", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        text-decoration: none;
+        padding: 0.4rem 0.6rem;
+        border-radius: 1rem;
+        white-space: nowrap;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: aurora 15s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    /* Efecto al presionar */
+    .nav-item-mobile:active {
+        transform: scale(0.92);
+    }
+
+    /* Gradientes únicos al hover/tap */
+    .nav-item-mobile.nav-1:hover,
+    .nav-item-mobile.nav-1:active {
+        background: linear-gradient(-45deg, #ff6b6b, #ee7752, #feca57);
+        background-size: 400% 400%;
+        animation: aurora 6s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    .nav-item-mobile.nav-2:hover,
+    .nav-item-mobile.nav-2:active {
+        background: linear-gradient(-45deg, #e73c7e, #f093fb, #f5576c);
+        background-size: 400% 400%;
+        animation: aurora 6s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    .nav-item-mobile.nav-3:hover,
+    .nav-item-mobile.nav-3:active {
+        background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+        background-size: 400% 400%;
+        animation: aurora 6s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    .nav-item-mobile.nav-4:hover,
+    .nav-item-mobile.nav-4:active {
+        background: linear-gradient(-45deg, #23d5ab, #4ecdc4, #a8e6cf);
+        background-size: 400% 400%;
+        animation: aurora 6s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    .nav-item-mobile.nav-5:hover,
+    .nav-item-mobile.nav-5:active {
+        background: linear-gradient(-45deg, #ffecd2, #fcb69f, #ff9a9e);
+        background-size: 400% 400%;
+        animation: aurora 6s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+}
+
+/* =============================================================================
+   5. SCROLL INDICATOR
+   ============================================================================= */
+
+/** Contenedor de las flechas de scroll */
+.scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+/** Flechas individuales con animación de rebote */
+.scroll-arrow {
+    width: 35px;
+    height: 10px;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite, scrollBounce 1.5s ease-in-out infinite;
+    opacity: 0;
+    clip-path: polygon(0% 0%, 50% 70%, 100% 0%, 100% 30%, 50% 100%, 0% 30%);
+}
+
+/** Delay escalonado para efecto cascada */
+.scroll-arrow:nth-child(1) {
+    animation-delay: 0s, 0s;
+}
+
+.scroll-arrow:nth-child(2) {
+    animation-delay: 0s, 0.15s;
+}
+
+.scroll-arrow:nth-child(3) {
+    animation-delay: 0s, 0.3s;
+}
+
+/* =============================================================================
+   6. LAYOUT MOBILE (≤768px)
+   ============================================================================= */
+
+@media (max-width: 768px) {
+
+    /** Ocultar layout desktop */
+    .brand-desktop {
+        display: none;
+    }
+
+    /** Mostrar layout mobile */
+    .brand-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        width: 100%;
+        height: 100vh;
+    }
+
+    /** Columna central con letras verticales */
+    .mobile-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+    }
+
+    /** Letras individuales M-E-T-A-C-O-D-E-X */
+    .vertical-letter {
+        font-family: "Montserrat", sans-serif;
+        font-weight: 400;
+        font-size: clamp(2.2rem, 9vh, 3.5rem);
+        text-transform: uppercase;
+        line-height: 1;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: aurora 15s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: opacity 0.3s ease-out;
+    }
+
+    /** Logo móvil - crece hasta 4x */
+    .brand-logo-mobile {
+        width: clamp(55px, 15vw, 90px);
+        height: clamp(70px, 19vw, 115px);
+        margin: 0.5rem 0;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: aurora 15s ease infinite;
+        -webkit-mask-image: url('/path1.svg');
+        mask-image: url('/path1.svg');
+        mask-size: contain;
+        mask-repeat: no-repeat;
+        mask-position: center;
+        transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    /** Columnas laterales (info y portfolio) */
+    .mobile-side {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-width: 90px;
+        gap: 0.3rem;
+        transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+            opacity 0.3s ease-out;
+    }
+
+    .mobile-side.left {
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    .mobile-side.right {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .mobile-side .info-name {
+        font-size: 0.75rem;
+        color: #333;
+        margin: 0;
+    }
+
+    .mobile-side .info-title {
+        font-size: 0.65rem;
+        color: #666;
+        margin: 0.2rem 0 0 0;
+    }
+
+    .mobile-side .brand-subtitle {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    /** Ajustes scroll indicator para móvil */
+    .scroll-indicator {
+        bottom: 2rem;
+    }
+
+    .scroll-arrow {
+        width: 28px;
+        height: 8px;
+    }
+}
+
+/* =============================================================================
+   7. CAPA DE CONTENIDO
+   ============================================================================= */
+
+/** Capa 2: Espacio para scroll (z-index: 2) */
+.content-layer {
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* =============================================================================
+   8. SECCIÓN PORTAFOLIO - Sistema Solar
+   ============================================================================= */
+
+/* =============================================================================
+   SECCIÓN SOBRE MI - Logo 3D Rotando
+   ============================================================================= */
+
+.about-section {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4rem;
+    padding: 2rem 4rem 2rem 6rem;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/** Logo 3D rotando en eje X */
+.about-logo-container {
+    flex-shrink: 0;
+    perspective: 1000px;
+}
+
+.about-logo-3d {
+    width: 350px;
+    height: 438px;
+    /* Fondo con gradiente rosa (paleta de nav-2) */
+    background: linear-gradient(-45deg, #e73c7e, #f093fb, #f5576c);
+    background-size: 400% 400%;
+    animation: aurora 8s ease infinite, logo-rotate-x 15s ease-in-out infinite;
+    /* Máscara SVG del logo */
+    -webkit-mask-image: url('/path1.svg');
+    mask-image: url('/path1.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    /* Habilitar 3D */
+    transform-style: preserve-3d;
+    filter: drop-shadow(0 10px 30px rgba(231, 60, 126, 0.3));
+}
+
+@keyframes logo-rotate-x {
+    0% {
+        transform: rotateY(0deg);
+    }
+
+    50% {
+        transform: rotateY(180deg);
+    }
+
+    100% {
+        transform: rotateY(360deg);
+    }
+}
+
+/** Contenido de texto con scroll propio */
+.about-content {
+    max-width: 600px;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    padding-right: 1.5rem;
+    scroll-behavior: smooth;
+    animation: slideInRight 0.6s ease-out forwards;
+}
+
+/* Scrollbar personalizado para about-content */
+.about-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.about-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 3px;
+}
+
+.about-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #e73c7e, #f093fb);
+    border-radius: 3px;
+}
+
+.about-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #d62d6e, #e084ec);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.about-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 600;
+    margin: 0 0 1.5rem 0;
+    background: linear-gradient(-45deg, #e73c7e, #f093fb, #f5576c);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.about-intro {
+    margin-bottom: 2rem;
+}
+
+.about-greeting {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.25rem;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+}
+
+.about-greeting strong {
+    color: #e73c7e;
+}
+
+.about-tagline {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    color: #888;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.about-alias {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #e73c7e;
+    margin: 0 0 0.5rem 0;
+}
+
+.about-text {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.8;
+}
+
+.about-text p {
+    margin: 0 0 1rem 0;
+}
+
+.about-personal,
+.about-languages {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    color: #999;
+    margin: 0.25rem 0;
+}
+
+.about-section-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #e73c7e;
+    margin: 1.5rem 0 0.75rem 0;
+}
+
+.about-list {
+    white-space: pre-line;
+    line-height: 1.6;
+}
+
+.about-achievement {
+    background: linear-gradient(135deg, rgba(231, 60, 126, 0.1), rgba(240, 147, 251, 0.1));
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border-left: 3px solid #e73c7e;
+    margin: 1.5rem 0;
+}
+
+.about-philosophy {
+    font-style: italic;
+    color: #666;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+    .about-section {
+        position: fixed;
+        inset: 0;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        gap: 0;
+        padding: 4.5rem 1rem 1rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .about-logo-container {
+        position: fixed;
+        right: -60px;
+        bottom: -30px;
+        width: 220px;
+        height: 275px;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .about-logo-3d {
+        width: 100%;
+        height: 100%;
+        opacity: 0.15;
+        filter: blur(1px);
+    }
+
+    .about-content {
+        position: relative;
+        width: 100%;
+        max-height: none;
+        overflow: visible;
+        padding: 0 0.5rem 2rem 0;
+        z-index: 10;
+    }
+
+    .about-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .about-greeting {
+        font-size: 1rem;
+    }
+
+    .about-tagline {
+        font-size: 0.75rem;
+    }
+
+    .about-personal,
+    .about-languages {
+        font-size: 0.75rem;
+    }
+
+    .about-text {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
+    .about-text p {
+        margin: 0 0 0.75rem 0;
+    }
+
+    .about-section-title {
+        font-size: 0.95rem;
+        margin: 1rem 0 0.5rem 0;
+    }
+
+    .about-list {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .about-achievement {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.75rem;
+        margin: 1rem 0;
+    }
+}
+
+/* =============================================================================
+   SECCIÓN MI STACK - Animación Dinámica
+   ============================================================================= */
+
+.stack-section {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/** Contenedor de todas las marquesinas */
+.stack-marquees {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/** Marquesina - cada fila */
+.stack-marquee {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 40px;
+    overflow: hidden;
+    opacity: 0.16;
+    filter: blur(1px);
+    will-change: transform;
+}
+
+/* Posiciones verticales de cada fila */
+.stack-marquee.row-1 {
+    top: 10%;
+}
+
+.stack-marquee.row-2 {
+    top: 28%;
+}
+
+.stack-marquee.row-3 {
+    top: 46%;
+}
+
+.stack-marquee.row-4 {
+    top: 64%;
+}
+
+.stack-marquee.row-5 {
+    top: 82%;
+}
+
+.marquee-track {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
+}
+
+/* Dirección izquierda */
+.marquee-track.left {
+    animation: marquee-scroll-left 80s linear infinite;
+}
+
+/* Dirección derecha */
+.marquee-track.right {
+    animation: marquee-scroll-right 80s linear infinite;
+}
+
+.marquee-icon {
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+@keyframes marquee-scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes marquee-scroll-right {
+    0% {
+        transform: translateX(-50%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/** SVG Principal grande con animación */
+.stack-main {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stack-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.stack-icon-large {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    animation: aurora 6s ease infinite, bass-beat 1.5s ease-in-out infinite;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    filter: drop-shadow(0 10px 40px rgba(102, 126, 234, 0.4));
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes bass-beat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes stack-spin {
+    0% {
+        transform: rotateY(0deg) scale(1);
+    }
+
+    25% {
+        transform: rotateY(90deg) scale(0.9);
+    }
+
+    50% {
+        transform: rotateY(180deg) scale(1);
+    }
+
+    75% {
+        transform: rotateY(270deg) scale(0.9);
+    }
+
+    100% {
+        transform: rotateY(360deg) scale(1);
+    }
+}
+
+.stack-name {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    animation: aurora 8s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    min-width: 180px;
+    white-space: nowrap;
+    margin: 0;
+}
+
+/** Badge de categoría */
+.stack-category {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid rgba(102, 126, 234, 0.4);
+    border-radius: 20px;
+    color: #667eea;
+}
+
+/** Contenedor de badges */
+.stack-badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/** Fila del nombre con estrella */
+.stack-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/** Estrella de favorito */
+.stack-favorite {
+    font-size: 1.2rem;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/** Badge de uso/estado */
+.stack-usage {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 10px;
+    color: #667eea;
+}
+
+/** Certificación */
+.stack-cert {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.7rem;
+    color: #999;
+    font-style: italic;
+    margin-top: 0.3rem;
+}
+
+/** Header de la sección */
+.stack-header {
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 10;
+}
+
+.stack-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stack-subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0;
+}
+
+/** Contenedor principal con gráficas laterales */
+.stack-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 4rem;
+}
+
+/** Gráficas de barras laterales */
+.stack-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 80px;
+}
+
+.stat-label {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #888;
+}
+
+.stat-bar-container {
+    width: 20px;
+    height: 150px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, #667eea, #764ba2);
+    border-radius: 10px;
+    transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-bar.years {
+    background: linear-gradient(180deg, #23a6d5, #667eea);
+}
+
+.stat-value {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    animation: aurora 8s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    min-width: 80px;
+    text-align: center;
+}
+
+/** Transición fade para stack */
+.stack-hero.transitioning {
+    opacity: 0.3;
+    transform: scale(0.95);
+}
+
+.stack-hero {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/** Botones de navegación */
+.stack-nav {
+    position: absolute;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.stack-nav-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid rgba(102, 126, 234, 0.4);
+    background: transparent;
+    color: #667eea;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stack-nav-btn:hover {
+    background: linear-gradient(-45deg, #667eea, #764ba2);
+    border-color: transparent;
+    color: white;
+    transform: scale(1.1);
+}
+
+.stack-counter {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.8rem;
+    color: #999;
+    min-width: 50px;
+    text-align: center;
+}
+
+/** Barra de progreso inferior */
+.stack-progress-container {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 4px;
+    background: rgba(102, 126, 234, 0.15);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.stack-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2, #23a6d5);
+    background-size: 200% 100%;
+    animation: aurora-horizontal 3s ease infinite;
+    border-radius: 2px;
+    transition: width 0.06s linear;
+}
+
+@keyframes aurora-horizontal {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Responsive mobile para Stack */
+@media (max-width: 768px) {
+    .stack-content {
+        flex-direction: row;
+        /* Mantener horizontal para barras a los lados */
+        padding: 0 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .stack-stat {
+        flex-shrink: 0;
+        min-width: 50px;
+    }
+
+    .stat-bar-container {
+        width: 16px;
+        height: 100px;
+    }
+
+    .stat-label {
+        font-size: 0.6rem;
+    }
+
+    .stat-value {
+        font-size: 0.75rem;
+        min-width: 40px;
+    }
+
+    .stack-icon-large {
+        width: 80px;
+        height: 80px;
+    }
+
+    .stack-name {
+        font-size: 1rem;
+        min-width: auto;
+    }
+
+    .stack-center {
+        flex: 1;
+        min-width: 0;
+        /* Permitir encogerse */
+    }
+
+    .stack-badges {
+        flex-wrap: wrap;
+    }
+
+    .stack-category,
+    .stack-usage {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.4rem;
+    }
+
+    .stack-nav {
+        bottom: 3.5rem;
+        gap: 1rem;
+    }
+
+    .stack-nav-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .stack-progress-container {
+        bottom: 1.5rem;
+        width: 150px;
+    }
+
+    .stack-header {
+        top: 1rem;
+    }
+
+    .stack-title {
+        font-size: 1.2rem;
+    }
+
+    .stack-subtitle {
+        font-size: 0.75rem;
+    }
+
+    /* Marquesinas más pequeñas en móvil */
+    .stack-marquee {
+        height: 30px;
+        opacity: 0.1;
+    }
+
+    .marquee-icon {
+        width: 25px;
+        height: 25px;
+    }
+
+    .marquee-track {
+        gap: 1rem;
+    }
+
+    /* Reducir a 3 marquesinas en móvil */
+    .stack-marquee.row-2,
+    .stack-marquee.row-4 {
+        display: none;
+    }
+}
+
+/** Sección principal del portafolio */
+.portfolio-section {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/** Sistema Solar - Posicionado a la izquierda, más visible */
+.solar-system {
+    position: absolute;
+    left: -180px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 600px;
+    height: 600px;
+    pointer-events: none;
+    /* GPU acceleration */
+    will-change: transform;
+    contain: layout style;
+}
+
+/** Sol - Centro del sistema */
+.sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(-45deg, #ff6b6b, #ee7752, #feca57);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
+}
+
+/** Órbitas - Anillos concéntricos */
+.orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 2px solid rgba(100, 100, 100, 0.25);
+    border-radius: 50%;
+    will-change: transform;
+}
+
+.orbit-1 {
+    width: 120px;
+    height: 120px;
+    margin: -60px 0 0 -60px;
+    animation: orbit-spin-1 12s linear infinite;
+}
+
+.orbit-2 {
+    width: 220px;
+    height: 220px;
+    margin: -110px 0 0 -110px;
+    animation: orbit-spin-2 20s linear infinite;
+}
+
+.orbit-3 {
+    width: 340px;
+    height: 340px;
+    margin: -170px 0 0 -170px;
+    animation: orbit-spin-3 32s linear infinite;
+}
+
+.orbit-4 {
+    width: 480px;
+    height: 480px;
+    margin: -240px 0 0 -240px;
+    animation: orbit-spin-4 48s linear infinite;
+}
+
+/* Keyframes para órbitas inclinadas - cada una mantiene su ángulo base */
+@keyframes orbit-spin-1 {
+    from {
+        transform: rotate(-15deg);
+    }
+
+    to {
+        transform: rotate(345deg);
+    }
+}
+
+@keyframes orbit-spin-2 {
+    from {
+        transform: rotate(10deg);
+    }
+
+    to {
+        transform: rotate(370deg);
+    }
+}
+
+@keyframes orbit-spin-3 {
+    from {
+        transform: rotate(-25deg);
+    }
+
+    to {
+        transform: rotate(335deg);
+    }
+}
+
+@keyframes orbit-spin-4 {
+    from {
+        transform: rotate(18deg);
+    }
+
+    to {
+        transform: rotate(378deg);
+    }
+}
+
+@keyframes orbit-spin-5 {
+    from {
+        transform: rotate(-8deg);
+    }
+
+    to {
+        transform: rotate(352deg);
+    }
+}
+
+@keyframes orbit-spin-6 {
+    from {
+        transform: rotate(25deg);
+    }
+
+    to {
+        transform: rotate(385deg);
+    }
+}
+
+/** Planetas - Burbujas con gradientes, centrados en el borde de la órbita */
+.planet {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    animation: planet-counter-rotate var(--spin-duration, 12s) linear infinite reverse;
+}
+
+.planet-1 {
+    --spin-duration: 12s;
+    --planet-color: #ff6b6b;
+    top: -8px;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    box-shadow: 0 0 12px rgba(255, 107, 107, 0.5);
+}
+
+.planet-2 {
+    --spin-duration: 20s;
+    --planet-color: #ee7752;
+    top: -10px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #ee7752, #f39c12);
+    box-shadow: 0 0 15px rgba(238, 119, 82, 0.5);
+}
+
+.planet-3 {
+    --spin-duration: 32s;
+    --planet-color: #feca57;
+    top: -12px;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #feca57, #ff9f43);
+    box-shadow: 0 0 18px rgba(254, 202, 87, 0.5);
+}
+
+.planet-4 {
+    --spin-duration: 48s;
+    --planet-color: #ff9f43;
+    top: -14px;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #ff9f43, #ffc048);
+    box-shadow: 0 0 20px rgba(255, 159, 67, 0.5);
+}
+
+.orbit-5 {
+    width: 580px;
+    height: 580px;
+    margin: -290px 0 0 -290px;
+    animation: orbit-spin-5 60s linear infinite;
+}
+
+.orbit-6 {
+    width: 700px;
+    height: 700px;
+    margin: -350px 0 0 -350px;
+    animation: orbit-spin-6 75s linear infinite;
+}
+
+.planet-5 {
+    --spin-duration: 60s;
+    --planet-color: #e17055;
+    top: -10px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #e17055, #d63031);
+    box-shadow: 0 0 15px rgba(225, 112, 85, 0.5);
+}
+
+.planet-6 {
+    --spin-duration: 75s;
+    --planet-color: #fdcb6e;
+    top: -8px;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, #fdcb6e, #f1c40f);
+    box-shadow: 0 0 12px rgba(253, 203, 110, 0.5);
+}
+
+@keyframes planet-counter-rotate {
+    from {
+        transform: translateX(-50%) rotate(0deg);
+    }
+
+    to {
+        transform: translateX(-50%) rotate(360deg);
+    }
+}
+
+/** Efecto de pulso neón al cambiar proyecto - Solo brillo, no afecta rotación */
+@keyframes neon-pulse {
+    0% {
+        filter: brightness(1) saturate(1);
+    }
+
+    /* Subida rápida (primeros 15%) */
+    15% {
+        filter: brightness(2) saturate(1.8);
+    }
+
+    /* Mantiene intensidad */
+    30% {
+        filter: brightness(2) saturate(1.8);
+    }
+
+    /* Bajada lenta (70% restante) */
+    100% {
+        filter: brightness(1) saturate(1);
+    }
+}
+
+@keyframes glow-pulse {
+    0% {
+        box-shadow: 0 0 15px var(--planet-color);
+    }
+
+    15% {
+        box-shadow: 0 0 50px var(--planet-color), 0 0 100px var(--planet-color);
+    }
+
+    30% {
+        box-shadow: 0 0 50px var(--planet-color), 0 0 100px var(--planet-color);
+    }
+
+    100% {
+        box-shadow: 0 0 15px var(--planet-color);
+    }
+}
+
+/** Estado de pulso activo - Solo brillo, NO cambia rotación */
+.solar-system.pulsing .planet {
+    animation:
+        planet-counter-rotate var(--spin-duration, 12s) linear infinite reverse,
+        neon-pulse 2s ease-out,
+        glow-pulse 2s ease-out;
+}
+
+.solar-system.pulsing .sun {
+    animation: neon-pulse 2s ease-out;
+}
+
+/** Contenido de texto - En el frente, pegado a las órbitas */
+.portfolio-content {
+    position: relative;
+    z-index: 10;
+    max-width: 750px;
+    padding: 2rem;
+    margin-left: 20%;
+    margin-right: auto;
+}
+
+.portfolio-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(-45deg, #ff6b6b, #ee7752, #feca57);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.portfolio-subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 2rem 0;
+}
+
+/** Display del proyecto activo con animación de entrada */
+.project-display {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 3px solid;
+    border-image: linear-gradient(-45deg, #ff6b6b, #ee7752, #feca57) 1;
+    /* GPU acceleration para transiciones suaves */
+    will-change: opacity, transform;
+    contain: content;
+}
+
+/* Animación de transición al cambiar proyecto */
+.project-display.animating {
+    animation: project-fade-in 0.4s ease-out;
+}
+
+@keyframes project-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.project-name {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 0.75rem 0;
+}
+
+.project-description {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.8;
+    margin: 0 0 1rem 0;
+    white-space: pre-line;
+}
+
+.project-tech {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/** Subtítulo del proyecto */
+.project-subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #888;
+    margin: 0 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/** Iconos de Stack Tecnológico */
+.stack-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.stack-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    overflow: visible;
+    position: relative;
+    cursor: pointer;
+}
+
+.stack-icon-inner {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, #ff6b6b, #ee7752, #feca57);
+    background-size: 400% 400%;
+    animation: aurora 8s ease infinite;
+    -webkit-mask-image: var(--icon-url);
+    mask-image: var(--icon-url);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    transition: transform 0.2s ease;
+}
+
+.stack-icon:hover .stack-icon-inner {
+    transform: scale(1.15);
+}
+
+/** Tooltip personalizado con gradientes de marca */
+.stack-icon::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    z-index: 100;
+    pointer-events: none;
+    /* Default gradient */
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.stack-icon::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    border: 6px solid transparent;
+    border-top-color: #667eea;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    z-index: 100;
+}
+
+.stack-icon:hover::before,
+.stack-icon:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+.stack-icon:hover::before {
+    transform: translateX(-50%) translateY(-12px);
+}
+
+/* Gradientes específicos por tecnología */
+.stack-icon[data-tech="dotnet"]::before {
+    background: linear-gradient(135deg, #512BD4, #7B3FE4);
+}
+
+.stack-icon[data-tech="dotnet"]::after {
+    border-top-color: #512BD4;
+}
+
+.stack-icon[data-tech="python"]::before {
+    background: linear-gradient(135deg, #3776AB, #FFD43B);
+}
+
+.stack-icon[data-tech="python"]::after {
+    border-top-color: #3776AB;
+}
+
+.stack-icon[data-tech="angular"]::before {
+    background: linear-gradient(135deg, #DD0031, #C3002F);
+}
+
+.stack-icon[data-tech="angular"]::after {
+    border-top-color: #DD0031;
+}
+
+.stack-icon[data-tech="react"]::before {
+    background: linear-gradient(135deg, #61DAFB, #00D8FF);
+}
+
+.stack-icon[data-tech="react"]::after {
+    border-top-color: #61DAFB;
+}
+
+.stack-icon[data-tech="react"]::before {
+    color: #20232a;
+}
+
+.stack-icon[data-tech="postgresql"]::before {
+    background: linear-gradient(135deg, #336791, #699EBF);
+}
+
+.stack-icon[data-tech="postgresql"]::after {
+    border-top-color: #336791;
+}
+
+.stack-icon[data-tech="docker"]::before {
+    background: linear-gradient(135deg, #2496ED, #0DB7ED);
+}
+
+.stack-icon[data-tech="docker"]::after {
+    border-top-color: #2496ED;
+}
+
+.stack-icon[data-tech="fastapi"]::before {
+    background: linear-gradient(135deg, #009688, #05A386);
+}
+
+.stack-icon[data-tech="fastapi"]::after {
+    border-top-color: #009688;
+}
+
+.stack-icon[data-tech="n8n"]::before {
+    background: linear-gradient(135deg, #EA4B71, #FF6D5A);
+}
+
+.stack-icon[data-tech="n8n"]::after {
+    border-top-color: #EA4B71;
+}
+
+.stack-icon[data-tech="tailwindcss"]::before {
+    background: linear-gradient(135deg, #06B6D4, #38BDF8);
+}
+
+.stack-icon[data-tech="tailwindcss"]::after {
+    border-top-color: #06B6D4;
+}
+
+.stack-icon[data-tech="vite"]::before {
+    background: linear-gradient(135deg, #646CFF, #BD34FE);
+}
+
+.stack-icon[data-tech="vite"]::after {
+    border-top-color: #646CFF;
+}
+
+.stack-icon[data-tech="nginx"]::before {
+    background: linear-gradient(135deg, #009639, #00C853);
+}
+
+.stack-icon[data-tech="nginx"]::after {
+    border-top-color: #009639;
+}
+
+.stack-icon[data-tech="typescript"]::before {
+    background: linear-gradient(135deg, #3178C6, #007ACC);
+}
+
+.stack-icon[data-tech="typescript"]::after {
+    border-top-color: #3178C6;
+}
+
+.stack-icon[data-tech="css3"]::before {
+    background: linear-gradient(135deg, #1572B6, #33A9DC);
+}
+
+.stack-icon[data-tech="css3"]::after {
+    border-top-color: #1572B6;
+}
+
+.stack-icon[data-tech="nodedotjs"]::before {
+    background: linear-gradient(135deg, #339933, #6CC24A);
+}
+
+.stack-icon[data-tech="nodedotjs"]::after {
+    border-top-color: #339933;
+}
+
+.stack-icon[data-tech="javascript"]::before {
+    background: linear-gradient(135deg, #F7DF1E, #FFE11A);
+}
+
+.stack-icon[data-tech="javascript"]::after {
+    border-top-color: #F7DF1E;
+}
+
+.stack-icon[data-tech="javascript"]::before {
+    color: #323330;
+}
+
+/** Navegación del carrusel */
+.project-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-arrow {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.nav-arrow:hover {
+    transform: scale(1.1);
+}
+
+.nav-arrow:active {
+    transform: scale(0.95);
+}
+
+.nav-arrow .arrow-icon {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+}
+
+.nav-arrow.prev .arrow-icon {
+    -webkit-mask-image: url('/arrow-left.svg');
+    mask-image: url('/arrow-left.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+}
+
+.nav-arrow.next .arrow-icon {
+    -webkit-mask-image: url('/arrow-left.svg');
+    mask-image: url('/arrow-left.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    transform: rotate(180deg);
+}
+
+.project-counter {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    color: #999;
+    min-width: 50px;
+    text-align: center;
+}
+
+/** Botones de enlaces - Integrados con el contenido */
+.project-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #333;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.project-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(-45deg, #ff6b6b, #ee7752, #feca57);
+    background-size: 400% 400%;
+    animation: aurora 8s ease infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.project-link:hover {
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.project-link:hover::before {
+    opacity: 1;
+}
+
+.link-icon {
+    width: 18px;
+    height: 18px;
+    background: #333;
+    transition: background 0.3s ease;
+}
+
+.project-link:hover .link-icon {
+    background: white;
+}
+
+.github-icon {
+    -webkit-mask-image: url('/github.svg');
+    mask-image: url('/github.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+}
+
+.web-icon {
+    -webkit-mask-image: url('/web.svg');
+    mask-image: url('/web.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+}
+
+/* =============================================================================
+   RESPONSIVE - TABLET (max-width: 1024px)
+   ============================================================================= */
+@media (max-width: 1024px) {
+    .portfolio-content {
+        margin-left: 25%;
+        max-width: 550px;
+    }
+
+    .solar-system {
+        left: -300px;
+        width: 500px;
+        height: 500px;
+    }
+}
+
+/* =============================================================================
+   RESPONSIVE - MÓVIL (max-width: 768px)
+   Sistema planetario abajo, contenido arriba
+   ============================================================================= */
+@media (max-width: 768px) {
+    .portfolio-section {
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 2rem;
+        overflow-y: auto;
+    }
+
+    .solar-system {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        width: 100%;
+        height: 300px;
+        order: 2;
+        margin-top: 2rem;
+    }
+
+    .sun {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .orbit {
+        left: 50%;
+        top: 50%;
+    }
+
+    .orbit-1 {
+        width: 80px;
+        height: 80px;
+    }
+
+    .orbit-2 {
+        width: 130px;
+        height: 130px;
+    }
+
+    .orbit-3 {
+        width: 180px;
+        height: 180px;
+    }
+
+    .orbit-4 {
+        width: 230px;
+        height: 230px;
+    }
+
+    .portfolio-content {
+        order: 1;
+        margin: 0 1rem;
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    .project-display {
+        padding: 1rem;
+    }
+
+    .project-name {
+        font-size: 1.3rem;
+    }
+
+    .project-subtitle {
+        font-size: 0.75rem;
+    }
+
+    .project-description {
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+
+    .stack-icons {
+        gap: 0.5rem;
+    }
+
+    .stack-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    .project-links {
+        justify-content: flex-start;
+    }
+
+    .project-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .project-nav {
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .nav-arrow {
+        width: 36px;
+        height: 36px;
+    }
+
+    .nav-arrow .arrow-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* ========== SECCIÓN ARQUITECTURA ========== */
+.arch-section {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 4rem 2rem;
+    overflow-y: auto;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Fondo de líneas punteadas animadas */
+.arch-lines-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.15;
+}
+
+.lines-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.dashed-line {
+    stroke: #667eea;
+    stroke-width: 0.2;
+    stroke-dasharray: 2 2;
+    animation: dashMove 30s linear infinite;
+}
+
+/* Layout de 3 columnas */
+.arch-main-layout {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    z-index: 10;
+}
+
+.arch-side {
+    flex: 0 0 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.side-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #667eea;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+}
+
+.side-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.arch-center {
+    flex: 1;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Stack mini groups */
+.stack-mini-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.mini-label {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.65rem;
+    color: #888;
+}
+
+.mini-icons {
+    display: flex;
+    gap: 0.3rem;
+}
+
+/* Method mini */
+.method-mini {
+    padding: 0.4rem 0.6rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 6px;
+}
+
+.method-mini-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #555;
+}
+
+/* Project badge */
+.project-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #667eea;
+    text-align: center;
+    padding: 0.3rem 0.8rem;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 20px;
+    align-self: center;
+}
+
+/* Flow step activo */
+.flow-step.active .flow-number {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+    transform: scale(1.15);
+}
+
+.flow-step .flow-number {
+    transition: all 0.3s ease;
+}
+
+.node.n5 {
+    animation-delay: 4s;
+}
+
+.node.n6 {
+    animation-delay: 5s;
+}
+
+.node.n7 {
+    animation-delay: 6s;
+}
+
+.node.n8 {
+    animation-delay: 7s;
+}
+
+.node.n9 {
+    animation-delay: 0.5s;
+}
+
+.node.n10 {
+    animation-delay: 1.5s;
+}
+
+@keyframes floatNode {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(5px, -8px);
+    }
+
+    50% {
+        transform: translate(-3px, 5px);
+    }
+
+    75% {
+        transform: translate(8px, 3px);
+    }
+}
+
+.conn {
+    stroke: #667eea;
+    stroke-width: 1.5;
+    stroke-dasharray: 6 6;
+    animation: dashMove 15s linear infinite;
+}
+
+@keyframes dashMove {
+    from {
+        stroke-dashoffset: 0;
+    }
+
+    to {
+        stroke-dashoffset: 100;
+    }
+}
+
+/* Header */
+.arch-header {
+    text-align: center;
+    z-index: 10;
+}
+
+.arch-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.arch-subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0;
+}
+
+/* Flujo de trabajo */
+.arch-flow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 10;
+}
+
+.flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.flow-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(-45deg, #667eea, #764ba2);
+    color: white;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.flow-label {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #667eea;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.flow-connector {
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 1px;
+}
+
+/* Stack groups */
+.arch-stacks {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 10;
+}
+
+.stack-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stack-group-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.stack-icons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mini-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5);
+    background-size: 400% 400%;
+    animation: aurora 8s ease infinite;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    transition: transform 0.3s ease;
+}
+
+.mini-icon:hover {
+    transform: scale(1.2);
+}
+
+/* Metodología expandida */
+.arch-methodology {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 10;
+}
+
+.method-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1rem;
+    background: rgba(102, 126, 234, 0.05);
+    border: 1px solid rgba(102, 126, 234, 0.15);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.method-item:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.15);
+}
+
+.method-icon {
+    font-size: 1.5rem;
+}
+
+.method-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.method-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.method-desc {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.7rem;
+    color: #888;
+}
+
+/* Terminal animada */
+.arch-terminal {
+    width: 100%;
+    max-width: 600px;
+    background: #1e1e2e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #313244;
+}
+
+.terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-dot.red {
+    background: #f38ba8;
+}
+
+.terminal-dot.yellow {
+    background: #f9e2af;
+}
+
+.terminal-dot.green {
+    background: #a6e3a1;
+}
+
+.terminal-title {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #6c7086;
+}
+
+.terminal-body {
+    padding: 1rem 1.5rem;
+    min-height: 180px;
+}
+
+.terminal-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeInLine 0.4s ease-out forwards;
+}
+
+.terminal-line.delay-1 {
+    animation-delay: 0.8s;
+}
+
+.terminal-line.delay-2 {
+    animation-delay: 1.2s;
+}
+
+.terminal-line.delay-3 {
+    animation-delay: 1.6s;
+}
+
+.terminal-line.delay-4 {
+    animation-delay: 2.2s;
+}
+
+.terminal-line.delay-5 {
+    animation-delay: 2.8s;
+}
+
+@keyframes fadeInLine {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.terminal-prompt {
+    color: #89b4fa;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+}
+
+.terminal-text {
+    color: #cdd6f4;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+}
+
+.terminal-text.typing {
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 0.6s steps(20) 0.2s forwards;
+    width: 0;
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+.terminal-output {
+    color: #a6adc8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+}
+
+.terminal-output.success {
+    color: #a6e3a1;
+}
+
+.terminal-output.dim {
+    color: #6c7086;
+    font-style: italic;
+}
+
+.terminal-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-left: auto;
+}
+
+.terminal-status.success {
+    background: rgba(166, 227, 161, 0.2);
+    color: #a6e3a1;
+}
+
+/* Diagrama de capas */
+.arch-layers {
+    text-align: center;
+    animation: slideUp 0.8s ease-out 0.3s both;
+}
+
+.arch-section-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.layer-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.layer-card {
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.layer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+}
+
+.layer-card.frontend {
+    border-color: #667eea;
+}
+
+.layer-card.frontend:hover {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.layer-card.backend {
+    border-color: #764ba2;
+}
+
+.layer-card.backend:hover {
+    background: rgba(118, 75, 162, 0.05);
+}
+
+.layer-card.database {
+    border-color: #23a6d5;
+}
+
+.layer-card.database:hover {
+    background: rgba(35, 166, 213, 0.05);
+}
+
+.layer-card.devops {
+    border-color: #a6e3a1;
+}
+
+.layer-card.devops:hover {
+    background: rgba(166, 227, 161, 0.05);
+}
+
+.layer-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.layer-card h4 {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 0.3rem 0;
+}
+
+.layer-techs {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.7rem;
+    color: #888;
+}
+
+.layer-arrow {
+    font-size: 1.5rem;
+    color: #ccc;
+    animation: pulseArrow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseArrow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: translateX(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateX(3px);
+    }
+}
+
+/* Principios de código */
+.arch-principles {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: slideUp 1s ease-out 0.6s both;
+}
+
+.principle-card {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: rgba(102, 126, 234, 0.05);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.principle-card:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.15);
+}
+
+.principle-icon {
+    font-size: 1.2rem;
+}
+
+.principle-text {
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #667eea;
+}
+
+/* Responsive Arquitectura */
+@media (max-width: 768px) {
+    .arch-section {
+        padding: 5rem 1rem 2rem;
+        gap: 1.5rem;
+    }
+
+    .arch-terminal {
+        max-width: 100%;
+    }
+
+    .terminal-body {
+        padding: 0.8rem 1rem;
+        min-height: auto;
+    }
+
+    .terminal-text,
+    .terminal-output {
+        font-size: 0.75rem;
+    }
+
+    .layer-flow {
+        flex-direction: column;
+    }
+
+    .layer-arrow {
+        transform: rotate(90deg);
+    }
+
+    @keyframes pulseArrow {
+
+        0%,
+        100% {
+            opacity: 0.5;
+            transform: rotate(90deg) translateX(0);
+        }
+
+        50% {
+            opacity: 1;
+            transform: rotate(90deg) translateX(3px);
+        }
+    }
+
+    .layer-card {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .arch-principles {
+        gap: 0.5rem;
+    }
+
+    .principle-card {
+        padding: 0.4rem 0.8rem;
+    }
+
+    .principle-text {
+        font-size: 0.75rem;
+    }
+}
+
+/* =============================================================================
+   SECCIÓN CONTACTO - Tablero Dividido con Colores Dinámicos
+   ============================================================================= */
+
+/* Variables CSS dinámicas (se establecen desde Angular) */
+.contact-section {
+    --hue: 200;
+    --complement-hue: 20;
+
+    /* Colores derivados */
+    --dark-square: hsla(var(--hue), 50%, 20%, 0.85);
+    --dark-square-gradient: linear-gradient(135deg,
+            hsla(var(--hue), 50%, 15%, 0.9),
+            hsla(var(--hue), 50%, 25%, 0.75));
+    --light-square: hsla(var(--complement-hue), 40%, 30%, 0.6);
+    --light-square-gradient: linear-gradient(135deg,
+            hsla(var(--complement-hue), 40%, 25%, 0.7),
+            hsla(var(--complement-hue), 40%, 35%, 0.5));
+    --dark-piece: hsl(var(--hue), 60%, 55%);
+    --light-piece: hsl(var(--complement-hue), 50%, 65%);
+
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+    background: white;
+    animation: sectionFadeIn 0.6s ease forwards;
+    overflow: hidden;
+}
+
+/* ========== Clases de Visibilidad Desktop/Móvil ========== */
+
+.mobile-only {
+    display: none !important;
+}
+
+.desktop-only {
+    display: flex;
+}
+
+/* ========== Mitades del Tablero - Variante 2 ========== */
+
+.chess-half {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    padding: 0;
+    /* Sin padding para pegar a extremos */
+    animation: chessFloat 8s ease-in-out infinite;
+}
+
+.left-half {
+    align-items: flex-start;
+    /* Pegado a la izquierda */
+    animation-delay: 0s;
+}
+
+.right-half {
+    align-items: flex-end;
+    /* Pegado a la derecha */
+    animation-delay: -4s;
+    /* Desfasado para efecto parallax */
+}
+
+/* Animación de flotación sutil (parallax) */
+@keyframes chessFloat {
+
+    0%,
+    100% {
+        transform: translateX(0) translateY(0);
+    }
+
+    25% {
+        transform: translateX(3px) translateY(-2px);
+    }
+
+    50% {
+        transform: translateX(-2px) translateY(1px);
+    }
+
+    75% {
+        transform: translateX(2px) translateY(-1px);
+    }
+}
+
+.chess-row {
+    display: flex;
+    gap: 6px;
+    /* Espacio entre casillas horizontalmente */
+    margin-bottom: 6px;
+    /* Espacio entre filas */
+}
+
+.left-half .chess-row {
+    justify-content: flex-start;
+}
+
+.right-half .chess-row {
+    justify-content: flex-end;
+}
+
+/* ========== Casillas - Variante 2: Redondeadas con Spacing ========== */
+
+.chess-square {
+    width: calc((100vh - 80px) / 8);
+    height: calc((100vh - 80px) / 8);
+    max-width: 70px;
+    max-height: 70px;
+    min-width: 50px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: 12px;
+    /* Esquinas redondeadas */
+    transition: all 0.3s ease;
+    /* Glassmorphism sin blur para mejor rendimiento */
+}
+
+.chess-square.dark {
+    background: linear-gradient(145deg,
+            hsla(var(--hue), 45%, 30%, 0.45),
+            hsla(var(--hue), 50%, 25%, 0.55));
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.chess-square.light {
+    background: linear-gradient(145deg,
+            hsla(var(--complement-hue), 35%, 45%, 0.35),
+            hsla(var(--complement-hue), 40%, 40%, 0.45));
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Hover effect */
+.chess-square:hover {
+    transform: scale(1.02);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Efecto al animar movimiento */
+.chess-square.animating-to {
+    background: hsla(var(--hue), 70%, 50%, 0.5) !important;
+    animation: squarePulse 0.4s ease;
+    box-shadow: 0 0 20px hsla(var(--hue), 70%, 50%, 0.4);
+}
+
+@keyframes squarePulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ========== Piezas - Colores Contrastantes ========== */
+
+.chess-piece {
+    width: 70%;
+    height: 70%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: var(--piece-svg);
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Piezas blancas - Color triádico brillante */
+.chess-piece.white-piece {
+    filter:
+        drop-shadow(2px 3px 6px rgba(0, 0, 0, 0.4)) brightness(1.3) saturate(0.6) sepia(0.1);
+}
+
+/* Piezas negras - Color oscuro intenso */
+.chess-piece.black-piece {
+    filter:
+        drop-shadow(2px 3px 6px rgba(0, 0, 0, 0.5)) brightness(0.3) contrast(1.3) saturate(1.2);
+}
+
+/* Hover en piezas */
+.chess-square:hover .chess-piece {
+    transform: scale(1.1);
+}
+
+/* ========== Centro - Información de Contacto ========== */
+
+.contact-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 3rem 4rem;
+    min-width: 280px;
+    text-align: center;
+}
+
+.contact-title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg,
+            hsl(var(--hue), 60%, 50%),
+            hsl(var(--complement-hue), 50%, 55%));
+    background-size: 200% 200%;
+    animation: aurora 8s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.contact-tagline {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+    font-style: italic;
+}
+
+/* Links de contacto */
+.contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.contact-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.95rem;
+    color: #333;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+}
+
+.contact-link:hover {
+    background: rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.contact-icon {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg,
+            hsl(var(--hue), 60%, 50%),
+            hsl(var(--complement-hue), 50%, 55%));
+    background-size: 200% 200%;
+    animation: aurora 8s ease infinite;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+.email-icon {
+    -webkit-mask-image: url('/email.svg');
+    mask-image: url('/email.svg');
+}
+
+.linkedin-icon {
+    -webkit-mask-image: url('/linkedin.svg');
+    mask-image: url('/linkedin.svg');
+}
+
+.github-icon {
+    -webkit-mask-image: url('/github.svg');
+    mask-image: url('/github.svg');
+}
+
+/* Botón de descarga CV - Estilo Link Elegante */
+.cv-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    background: transparent;
+    color: #333;
+    text-decoration: none;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Línea inferior animada */
+.cv-download-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+            hsl(var(--hue), 60%, 50%),
+            hsl(var(--complement-hue), 50%, 55%));
+    transition: width 0.3s ease;
+}
+
+.cv-download-btn:hover::after {
+    width: 100%;
+}
+
+.cv-download-btn:hover {
+    color: hsl(var(--hue), 60%, 40%);
+}
+
+.cv-icon {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.cv-download-btn:hover .cv-icon {
+    transform: translateY(2px);
+}
+
+/* Estado del juego */
+.game-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-indicator.online {
+    background: hsl(var(--hue), 70%, 50%);
+    animation: statusPulse 2s ease infinite;
+}
+
+.status-indicator.offline {
+    background: #aaa;
+}
+
+@keyframes statusPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+.move-counter {
+    font-weight: 500;
+}
+
+.connecting-text {
+    animation: blink 1s ease infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Botón Volver al Menú */
+.back-to-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    position: relative;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.back-to-menu-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+            hsl(var(--hue), 60%, 50%),
+            hsl(var(--complement-hue), 50%, 55%));
+    transition: width 0.3s ease;
+}
+
+.back-to-menu-btn:hover::after {
+    width: 100%;
+}
+
+.back-to-menu-btn:hover {
+    color: hsl(var(--hue), 60%, 40%);
+}
+
+.back-arrow {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.back-to-menu-btn:hover .back-arrow {
+    transform: translateX(-3px);
+}
+
+/* ========== Responsive - Móvil (tablero 8x4 horizontal) ========== */
+
+@media (max-width: 768px) {
+
+    /* Layout vertical: top-half | centro | bottom-half */
+    .contact-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+
+    /* Invertir visibilidad en móvil */
+    .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: flex !important;
+    }
+
+    /* Las mitades ahora muestran filas horizontales (8 casillas por línea) */
+    .chess-half {
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        /* Pegado a la izquierda */
+        align-items: flex-start;
+        animation: none;
+        padding: 0;
+        /* Sin padding para pegarse a los bordes */
+        gap: 0;
+        /* Sin gap entre filas */
+        flex-shrink: 0;
+        /* No encogerse */
+    }
+
+    .left-half {
+        align-items: center;
+        order: 1;
+    }
+
+    .right-half {
+        align-items: center;
+        order: 3;
+    }
+
+    /* Mitades horizontales para móvil */
+    .top-half {
+        order: 1;
+        /* Arriba */
+        flex-direction: column;
+    }
+
+    .bottom-half {
+        order: 3;
+        /* Abajo */
+        flex-direction: column;
+        /* Padding para evitar que los controles de navegación del móvil corten el tablero */
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 60px);
+        margin-bottom: 0;
+    }
+
+    /* Filas horizontales pegadas */
+    .chess-row {
+        justify-content: flex-start;
+        gap: 0;
+        /* Sin gap */
+        margin-bottom: 0;
+    }
+
+    /* Casillas ocupan exacto 1/8 del ancho */
+    .chess-square {
+        width: calc(100vw / 8);
+        height: calc(100vw / 8);
+        max-width: none;
+        max-height: 50px;
+        min-width: unset;
+        min-height: unset;
+        border-radius: 4px;
+        margin: 1px;
+        /* Pequeño margen para el gap visual */
+    }
+
+    /* Centro adaptado - con fondo para legibilidad */
+    .contact-center {
+        order: 2;
+        padding: 2rem 1.5rem;
+        min-width: auto;
+        gap: 0.8rem;
+        flex: 1;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.95);
+        /* Fondo claro para legibilidad */
+        position: relative;
+        z-index: 5;
+    }
+
+    .contact-title {
+        font-size: 1.5rem;
+        letter-spacing: 0.05em;
+    }
+
+    .contact-tagline {
+        font-size: 0.85rem;
+    }
+
+    /* Links más compactos */
+    .contact-links {
+        gap: 0.5rem;
+    }
+
+    .contact-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .contact-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Botón CV compacto */
+    .cv-download-btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0;
+    }
+
+    /* Estado del juego más pequeño */
+    .game-status {
+        font-size: 0.75rem;
+    }
+
+    .status-indicator {
+        width: 6px;
+        height: 6px;
+    }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 380px) {
+    .chess-square {
+        width: calc((100vw - 28px) / 8);
+        height: calc((100vw - 28px) / 8);
+        max-width: 38px;
+        max-height: 38px;
+        min-width: 30px;
+        min-height: 30px;
+        border-radius: 6px;
+    }
+
+    .chess-row {
+        gap: 3px;
+        margin-bottom: 3px;
+    }
+
+    .contact-title {
+        font-size: 1.2rem;
+    }
+
+    .contact-center {
+        padding: 1rem 0.5rem;
+        gap: 0.75rem;
+    }
+}

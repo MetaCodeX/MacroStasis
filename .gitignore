@@ -1,0 +1,49 @@
+# =============================================================================
+# MacroStasis - .gitignore
+# =============================================================================
+
+# Environment files (contain sensitive data)
+.env
+*.env
+backend/.env
+chessengine/.env
+macrostasis/.env
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.pyo
+.pyd
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Angular specific
+macrostasis/.angular/
+macrostasis/node_modules/
+
+# Docker
+.docker/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
