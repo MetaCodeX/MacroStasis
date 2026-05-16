@@ -1,1 +1,5 @@
-import { createApp } from "vue"
+export default {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+}
