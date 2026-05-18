@@ -180,7 +180,13 @@ const goldGradient = [
   { pos: 1, color: "#fff8d6" },
 ]
 
-export function OriginalScene() {
+export function OriginalScene({
+  onEdgesReady,
+  onLoaded,
+}: {
+  onEdgesReady?: (edges: { leftEdgePx: number; rightEdgePx: number }) => void
+  onLoaded?: () => void
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const mode = useRef<"desktop" | "mobile">("desktop")
 
@@ -188,7 +194,8 @@ export function OriginalScene() {
     const container = ref.current
     if (!container) return
 
-    mode.current = window.innerWidth < 768 ? "mobile" : "desktop"
+    const mql = window.matchMedia("(orientation: portrait) and (max-width: 1023px)")
+    mode.current = mql.matches ? "mobile" : "desktop"
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
     renderer.setSize(window.innerWidth, window.innerHeight)
@@ -291,6 +298,31 @@ export function OriginalScene() {
     const dpr = Math.min(window.devicePixelRatio, 2)
     let model: any = null
     let allSprites: THREE.Sprite[] = []
+    let loaded = false
+
+    function computeEdges() {
+      const meta = allSprites.find((s) => (s.material as THREE.SpriteMaterial).map?.name === "" || s.userData.shaderTime)
+      const codex = allSprites.find((s) => s !== meta && s.userData.shaderTime)
+
+      if (!meta || !codex) return
+
+      const metaLeft = meta.position.x - meta.scale.x * (meta.userData.visualLeftBias as number)
+      const codexRight = codex.position.x + codex.scale.x * (codex.userData.visualLeftBias as number)
+
+      const leftVec = new THREE.Vector3(metaLeft, 0, 0).project(camera)
+      const rightVec = new THREE.Vector3(codexRight, 0, 0).project(camera)
+
+      const leftPx = (leftVec.x + 1) / 2 * window.innerWidth
+      const rightPx = (rightVec.x + 1) / 2 * window.innerWidth
+
+      onEdgesReady?.({ leftEdgePx: leftPx, rightEdgePx: rightPx })
+    }
+
+    function fireLoaded() {
+      if (loaded) return
+      loaded = true
+      setTimeout(() => onLoaded?.(), 300)
+    }
 
     function renderDesktop(gltf: any): THREE.Sprite[] {
       const obj = gltf.scene
@@ -383,7 +415,7 @@ export function OriginalScene() {
       const gapY = vh * 0.025
       const gapX = vw * 0.04
       const metaMargin = vh * 0.90
-      const codexMargin = vh * 0.95
+      const codexMargin = vh * 0.30
 
       const metaLetters = ["M", "E", "T", "A"]
       const metaSprites = metaLetters.map(l =>
@@ -479,37 +511,46 @@ export function OriginalScene() {
       } else {
         allSprites = renderDesktop(gltf)
       }
+      computeEdges()
+      fireLoaded()
     }
 
     const loader = new GLTFLoader()
     loader.load("/model.gltf", (gltf) => {
       model = gltf.scene
-      document.fonts
-        .load("400 128px Raleway")
-        .then(() => buildSprites(gltf))
-        .catch(() => buildSprites(gltf))
+      document.fonts.ready.then(() => buildSprites(gltf)).catch(() => buildSprites(gltf))
     })
 
+    function switchMode(mobile: boolean) {
+      mode.current = mobile ? "mobile" : "desktop"
+      applyCameraMode(mobile)
+      if (model) {
+        clearSprites(allSprites, scene)
+        buildSprites(model)
+      }
+      composer.passes.length = 0
+      composer.addPass(new RenderPass(scene, camera))
+      const strength = mobile ? 0.10 : 0.15
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), strength, 0.4, 0.85))
+      composer.addPass(new OutputPass())
+      camera.aspect = window.innerWidth / window.innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      composer.setSize(window.innerWidth, window.innerHeight)
+    }
+
     function onResize() {
-      const mobile = window.innerWidth < 768
+      const mobile = mql.matches
       if (mobile !== (mode.current === "mobile")) {
-        mode.current = mobile ? "mobile" : "desktop"
-        applyCameraMode(mobile)
-        if (model) {
-          clearSprites(allSprites, scene)
-          buildSprites(model)
-        }
-        composer.passes.length = 0
-        composer.addPass(new RenderPass(scene, camera))
-        const strength = mobile ? 0.10 : 0.15
-        composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), strength, 0.4, 0.85))
-        composer.addPass(new OutputPass())
+        switchMode(mobile)
       }
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
       composer.setSize(window.innerWidth, window.innerHeight)
     }
+
+    mql.addEventListener("change", onResize)
     window.addEventListener("resize", onResize)
 
     let running = true
@@ -547,6 +588,7 @@ export function OriginalScene() {
 
     return () => {
       running = false
+      mql.removeEventListener("change", onResize)
       window.removeEventListener("resize", onResize)
       document.removeEventListener("visibilitychange", onVisibilityChange)
       renderer.dispose()
