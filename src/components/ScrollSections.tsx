@@ -622,6 +622,8 @@ function GithubSection({ lang }: { lang: 'es' | 'en' }) {
   const [data, setData] = useState<GithubData | null>(null)
   const [loading, setLoading] = useState(true)
   const [isMock, setIsMock] = useState(false)
+  const [flashUpdate, setFlashUpdate] = useState(false)
+
   const sectionRef = useScrollReveal()
   const calendarScrollRef = useRef<HTMLDivElement>(null)
 
@@ -642,28 +644,63 @@ function GithubSection({ lang }: { lang: 'es' | 'en' }) {
     }
   }, [loading, data, lang])
 
+  // Establish silent background polling to update GitHub data in real-time
   useEffect(() => {
-    async function fetchData() {
+    let active = true
+    let pollIntervalId: any
+
+    async function initialFetch() {
       try {
         const res = await fetch("/api/github")
-        if (!res.ok) {
-          throw new Error("Failed to fetch github data")
-        }
+        if (!res.ok) throw new Error("HTTP error " + res.status)
         const json = await res.json()
-        if (json.error || !json.user) {
-          throw new Error(json.error || "Invalid response data")
-        }
+        if (json.error) throw new Error(json.error)
+        
+        if (!active) return
         setData(json)
-      } catch (err) {
-        console.error("Error fetching live GitHub data, falling back to mock:", err)
+        setLoading(false)
+      } catch (err: any) {
+        console.error("Initial fetch failed:", err)
+        if (!active) return
         setData(generateMockGithubData())
         setIsMock(true)
-      } finally {
         setLoading(false)
       }
     }
-    fetchData()
-  }, [])
+
+    initialFetch().then(() => {
+      if (isMock) return
+
+      // Background data sync check every 60 seconds
+      let lastDataStr = ""
+      pollIntervalId = setInterval(async () => {
+        if (!active) return
+        
+        try {
+          const res = await fetch("/api/github")
+          if (!res.ok) throw new Error("HTTP error " + res.status)
+          const json = await res.json()
+          if (json.error) throw new Error(json.error)
+          
+          if (!active) return
+          const dataStr = JSON.stringify(json)
+          if (lastDataStr && dataStr !== lastDataStr) {
+            setData(json)
+            setFlashUpdate(true)
+            setTimeout(() => setFlashUpdate(false), 1200)
+          }
+          lastDataStr = dataStr
+        } catch (err: any) {
+          console.error("Background sync failed:", err)
+        }
+      }, 60000)
+    })
+
+    return () => {
+      active = false
+      clearInterval(pollIntervalId)
+    }
+  }, [lang, isMock])
 
   const calendar = data?.user?.contributionsCollection?.contributionCalendar
   const repos = data?.user?.repositories?.nodes?.slice(0, 8) || []
@@ -699,6 +736,25 @@ function GithubSection({ lang }: { lang: 'es' | 'en' }) {
 
   return (
     <section id="github" ref={sectionRef} className="scroll-section mx-auto max-w-5xl px-4 sm:px-6 py-20">
+      <style>{`
+        @keyframes goldGlowFlash {
+          0% {
+            box-shadow: 0 0 0 0px rgba(255, 215, 0, 0);
+            border-color: rgba(255, 255, 255, 0.05) !important;
+          }
+          30% {
+            box-shadow: 0 0 20px 2px rgba(255, 215, 0, 0.15);
+            border-color: rgba(255, 215, 0, 0.35) !important;
+          }
+          100% {
+            box-shadow: 0 0 0 0px rgba(255, 215, 0, 0);
+            border-color: rgba(255, 255, 255, 0.05) !important;
+          }
+        }
+        .sync-flash-active {
+          animation: goldGlowFlash 1.2s ease-in-out;
+        }
+      `}</style>
       <Heading as="h2" size="2" weight="light" color="gold" style={{ letterSpacing: '0.3em' }} className="uppercase mb-2">
         GITHUB HUB
       </Heading>
@@ -714,7 +770,7 @@ function GithubSection({ lang }: { lang: 'es' | 'en' }) {
       ) : (
         <div className="space-y-12">
           {/* Calendar Grid Container */}
-          <div className="relative w-full bg-[#070b12] border border-white/5 rounded-lg p-6 overflow-hidden before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top_right,rgba(255,215,0,0.02),transparent_45%)] before:pointer-events-none">
+          <div className={`relative w-full bg-[#070b12] border border-white/5 rounded-lg p-6 overflow-hidden before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top_right,rgba(255,215,0,0.02),transparent_45%)] before:pointer-events-none transition-all duration-300 ${flashUpdate ? 'sync-flash-active' : ''}`}>
             <Flex justify="between" align="center" className="mb-6 flex-wrap gap-2">
               <Box>
                 <Heading as="h4" size="3" className="text-white font-semibold uppercase tracking-wider">
@@ -841,7 +897,7 @@ function GithubSection({ lang }: { lang: 'es' | 'en' }) {
                       flexDirection: 'column',
                       justifyContent: 'space-between'
                     }}
-                    className="hover:border-gold/30 hover:shadow-[0_4px_20px_rgba(255,215,0,0.03)] transition-all duration-300 group/card p-5 sm:p-6"
+                    className={`hover:border-gold/30 hover:shadow-[0_4px_20px_rgba(255,215,0,0.03)] transition-all duration-300 group/card p-5 sm:p-6 ${flashUpdate ? 'sync-flash-active' : ''}`}
                   >
                     <Box>
                       <Flex justify="between" align="center" className="mb-3 flex-wrap gap-2">

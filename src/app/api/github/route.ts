@@ -2,7 +2,20 @@ import { NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
 
-export async function GET() {
+// Simple in-memory cache to prevent hitting GitHub rate limits
+let cachedPayload: any = null
+let lastFetchedTime = 0
+const CACHE_TTL = 60 * 1000 // 60 seconds
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const forceNoCache = searchParams.get("nocache") === "true"
+
+  const now = Date.now()
+  if (!forceNoCache && cachedPayload && (now - lastFetchedTime < CACHE_TTL)) {
+    return NextResponse.json(cachedPayload)
+  }
+
   const token = process.env.GITHUB_TOKEN
 
   if (!token) {
@@ -152,6 +165,9 @@ export async function GET() {
         }
       }
     }
+
+    cachedPayload = responsePayload
+    lastFetchedTime = now
 
     return NextResponse.json(responsePayload)
   } catch (error: any) {
