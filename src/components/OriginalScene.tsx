@@ -8,6 +8,7 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js"
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js"
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js"
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js"
+import { RadioManager } from "@/lib/RadioManager"
 
 function measureTextWidth(text: string) {
   const ctx = document.createElement("canvas").getContext("2d")!
@@ -23,6 +24,7 @@ function makeMetallicSprite(
   color2: string,
   highlight: string,
   speed: number,
+  isNeon: boolean = false
 ) {
   const fontSize = 128
   const canvas = document.createElement("canvas")
@@ -31,9 +33,9 @@ function makeMetallicSprite(
   ctx.font = `400 ${fontSize}px Raleway, sans-serif`
   const metrics = ctx.measureText(text)
   const tw = metrics.width
-  const pad = fontSize * 0.4
+  const pad = isNeon ? fontSize * 0.7 : fontSize * 0.4
   const cw = Math.ceil(tw + pad * 2)
-  const ch = Math.ceil(fontSize * 1.4)
+  const ch = Math.ceil(isNeon ? fontSize * 1.8 : fontSize * 1.4)
 
   canvas.width = cw * dpr
   canvas.height = ch * dpr
@@ -44,8 +46,8 @@ function makeMetallicSprite(
   ctx.textAlign = "center"
   ctx.textBaseline = "middle"
 
-  ctx.shadowColor = "rgba(0,0,0,0.7)"
-  ctx.shadowBlur = fontSize * 0.25
+  ctx.shadowColor = isNeon ? highlight : "rgba(0,0,0,0.7)"
+  ctx.shadowBlur = isNeon ? fontSize * 0.35 : fontSize * 0.25
   ctx.fillStyle = "#ffffff"
   ctx.fillText(text, cw / 2, ch / 2)
 
@@ -101,6 +103,7 @@ function makeCanvasSprite(
   height: number,
   dpr: number,
   stops: Array<{ pos: number; color: string }>,
+  isNeon: boolean = false
 ) {
   const fontSize = 128
   const canvas = document.createElement("canvas")
@@ -109,9 +112,9 @@ function makeCanvasSprite(
   ctx.font = `400 ${fontSize}px Raleway, sans-serif`
   const metrics = ctx.measureText(text)
   const tw = metrics.width
-  const pad = fontSize * 0.4
+  const pad = isNeon ? fontSize * 0.7 : fontSize * 0.4
   const cw = Math.ceil(tw + pad * 2)
-  const ch = Math.ceil(fontSize * 1.4)
+  const ch = Math.ceil(isNeon ? fontSize * 1.8 : fontSize * 1.4)
 
   canvas.width = cw * dpr
   canvas.height = ch * dpr
@@ -122,8 +125,8 @@ function makeCanvasSprite(
   ctx.textAlign = "center"
   ctx.textBaseline = "middle"
 
-  ctx.shadowColor = "rgba(0,0,0,0.7)"
-  ctx.shadowBlur = fontSize * 0.25
+  ctx.shadowColor = isNeon ? stops[stops.length - 1].color : "rgba(0,0,0,0.7)"
+  ctx.shadowBlur = isNeon ? fontSize * 0.35 : fontSize * 0.25
 
   const grad = ctx.createLinearGradient(0, 0, cw * 0.8, 0)
   for (const s of stops) {
@@ -161,9 +164,9 @@ function placeRight(sprite: THREE.Sprite, anchorX: number, anchorY: number, z = 
   sprite.position.set(anchorX - sprite.scale.x * bias, anchorY, z)
 }
 
-function clearSprites(sprites: THREE.Sprite[], scene: THREE.Scene) {
+function clearSprites(sprites: THREE.Sprite[]) {
   for (const s of sprites) {
-    scene.remove(s)
+    if (s.parent) s.parent.remove(s)
     s.material.dispose()
     if (s.material.map) s.material.map.dispose()
   }
@@ -180,21 +183,30 @@ const goldGradient = [
   { pos: 1, color: "#fff8d6" },
 ]
 
+let globalHasEntered = false
+
 export function OriginalScene({
+  peeking = false,
   onEdgesReady,
   onLoaded,
 }: {
+  peeking?: boolean
   onEdgesReady?: (edges: { leftEdgePx: number; rightEdgePx: number }) => void
   onLoaded?: () => void
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const mode = useRef<"desktop" | "mobile">("desktop")
+  const peekingRef = useRef(peeking)
+
+  useEffect(() => {
+    peekingRef.current = peeking
+  }, [peeking])
 
   useEffect(() => {
     const container = ref.current
     if (!container) return
 
-    const mql = window.matchMedia("(orientation: portrait) and (max-width: 1023px)")
+    const mql = window.matchMedia("(max-width: 1023px)")
     mode.current = mql.matches ? "mobile" : "desktop"
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
@@ -207,9 +219,42 @@ export function OriginalScene({
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0x03050a)
 
+    // Interactive lighting
+    const pointerLight = new THREE.PointLight(0xffaa00, 0, 40) // Golden tint
+    scene.add(pointerLight)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.1)) // Subtle ambient to balance
+
+    const contentGroup = new THREE.Group()
+    
+    // Dramatic Entrance Initial State (only runs on first mount, persists across fast remounts)
+    if (globalHasEntered) {
+      contentGroup.scale.set(1.0, 1.0, 1.0)
+      contentGroup.position.z = 0
+      contentGroup.rotation.y = 0
+    } else {
+      contentGroup.scale.set(0.001, 0.001, 0.001)
+      contentGroup.position.z = -50
+      contentGroup.rotation.y = Math.PI // Will spin in
+      globalHasEntered = true
+    }
+    scene.add(contentGroup)
+
+    // Interactivity State Variables
+    const targetMouse = new THREE.Vector2(0, 0)
+    const currentMouse = new THREE.Vector2(0, 0)
+    let modelSpinSpeed = 0.5
+    let bloomTarget = mode.current === "mobile" ? 0.10 : 0.15
+    let currentBloom = bloomTarget
+    let scrollY = window.scrollY || 0
+    let isHovering = false
+
+    const raycaster = new THREE.Raycaster()
+
     const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 200)
     camera.position.set(0, 0.5, 12)
     camera.lookAt(0, 0, 0)
+
+    let bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), bloomTarget, 0.4, 0.85)
 
     function applyCameraMode(mobile: boolean) {
       if (mobile) {
@@ -221,6 +266,9 @@ export function OriginalScene({
       }
       camera.lookAt(0, 0, 0)
       camera.updateProjectionMatrix()
+      
+      bloomTarget = mobile ? 0.10 : 0.15
+      currentBloom = bloomTarget
     }
     applyCameraMode(mode.current === "mobile")
 
@@ -230,9 +278,7 @@ export function OriginalScene({
 
     const composer = new EffectComposer(renderer)
     composer.addPass(new RenderPass(scene, camera))
-
-    const bloomStrength = mode.current === "mobile" ? 0.10 : 0.15
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), bloomStrength, 0.4, 0.85))
+    composer.addPass(bloomPass)
     composer.addPass(new OutputPass())
 
     const starCount = mode.current === "mobile" ? 2000 : 4000
@@ -325,7 +371,7 @@ export function OriginalScene({
     }
 
     function renderDesktop(gltf: any): THREE.Sprite[] {
-      const obj = gltf.scene
+      const obj = gltf.scene || gltf
       obj.traverse((c: THREE.Object3D) => {
         const mesh = c as THREE.Mesh
         if (mesh.isMesh) {
@@ -338,10 +384,13 @@ export function OriginalScene({
       })
       obj.scale.set(0.033, 0.033, 0.033)
       const shiftX = -0.35
-      obj.position.x = shiftX
-      scene.add(obj)
-
+      obj.position.set(shiftX, 0, 0)
+      
+      // Update matrices and compute bounding box while unparented
+      obj.updateMatrixWorld(true)
       const box = new THREE.Box3().setFromObject(obj)
+      
+      contentGroup.add(obj)
       const size = new THREE.Vector3()
       const center = new THREE.Vector3()
       box.getSize(size)
@@ -350,16 +399,17 @@ export function OriginalScene({
       const my = center.y
       const textH = size.y * 0.55
 
-      const meta = makeMetallicSprite("META", textH, dpr, platinum.c1, platinum.c2, platinum.hl, platinum.sp)
-      const codex = makeMetallicSprite("CODEX", textH, dpr, brightGold.c1, brightGold.c2, brightGold.hl, brightGold.sp)
+      // False passed for isNeon on Desktop
+      const meta = makeMetallicSprite("META", textH, dpr, platinum.c1, platinum.c2, platinum.hl, platinum.sp, false)
+      const codex = makeMetallicSprite("CODEX", textH, dpr, brightGold.c1, brightGold.c2, brightGold.hl, brightGold.sp, false)
 
       const metaW = meta.scale.x
       const metaH = meta.scale.y
       const codexW = codex.scale.x
       meta.position.set(shiftX - hw - metaW / 2, my, 0)
       codex.position.set(shiftX + hw + codexW / 2, my, 0)
-      scene.add(meta)
-      scene.add(codex)
+      contentGroup.add(meta)
+      contentGroup.add(codex)
 
       const sprites: THREE.Sprite[] = [meta, codex]
 
@@ -378,20 +428,20 @@ export function OriginalScene({
       const maxTitleH = metaW * 0.90 * ch / twTitle
       const titleH = Math.min(textH * 0.35, maxTitleH)
 
-      const name = makeMetallicSprite("CARLOS EDUARDO JUAREZ RICARDO", nameH, dpr, silver.c1, silver.c2, silver.hl, silver.sp)
-      const title = makeMetallicSprite("MID-LEVEL FULL STACK ENGINEER | AI & AUTOMATION ARCHITECT", titleH, dpr, brightGold.c1, brightGold.c2, brightGold.hl, brightGold.sp)
+      const name = makeMetallicSprite("CARLOS EDUARDO JUAREZ RICARDO", nameH, dpr, silver.c1, silver.c2, silver.hl, silver.sp, false)
+      const title = makeMetallicSprite("MID-LEVEL FULL STACK ENGINEER | AI & AUTOMATION ARCHITECT", titleH, dpr, brightGold.c1, brightGold.c2, brightGold.hl, brightGold.sp, false)
 
       placeLeft(name, metaLeftEdge, metaTopEdge + nameH / 2 + padY)
       placeRight(title, codexRightEdge, codexBottom - titleH / 2 - padY)
-      scene.add(name)
-      scene.add(title)
+      contentGroup.add(name)
+      contentGroup.add(title)
       sprites.push(name, title)
 
       return sprites
     }
 
     function renderMobile(gltf: any): THREE.Sprite[] {
-      const obj = gltf.scene
+      const obj = gltf.scene || gltf
       obj.traverse((c: THREE.Object3D) => {
         const mesh = c as THREE.Mesh
         if (mesh.isMesh) {
@@ -404,41 +454,42 @@ export function OriginalScene({
       })
       obj.scale.set(0.020, 0.020, 0.020)
       obj.position.set(0, 0, 0)
-      scene.add(obj)
+      contentGroup.add(obj)
 
       const fov = camera.fov * Math.PI / 180
       const dist = camera.position.length()
       const vh = dist * Math.tan(fov / 2)
       const vw = vh * camera.aspect
       const sprites: THREE.Sprite[] = []
-      const textH = vh * 0.13
-      const gapY = vh * 0.025
+      const textH = vh * 0.09
+      const gapY = vh * 0.020
       const gapX = vw * 0.04
-      const metaMargin = vh * 0.90
-      const codexMargin = vh * 0.30
+      const metaMargin = vh * 0.75
+      const codexMargin = vh * 0.20
 
       const metaLetters = ["M", "E", "T", "A"]
+      // False passed for isNeon on Mobile
       const metaSprites = metaLetters.map(l =>
-        makeMetallicSprite(l, textH, dpr, platinum.c1, platinum.c2, platinum.hl, platinum.sp)
+        makeMetallicSprite(l, textH, dpr, platinum.c1, platinum.c2, platinum.hl, platinum.sp, false)
       )
       const metaH = metaSprites[0].scale.y
       let yPos = metaMargin - metaH / 2
       for (const s of metaSprites) {
         s.position.set(0, yPos, 0)
-        scene.add(s)
+        contentGroup.add(s)
         sprites.push(s)
         yPos -= metaH + gapY
       }
 
       const codexLetters = ["C", "O", "D", "E", "X"]
       const codexSprites = codexLetters.map(l =>
-        makeMetallicSprite(l, textH, dpr, brightGold.c1, brightGold.c2, brightGold.hl, brightGold.sp)
+        makeMetallicSprite(l, textH, dpr, brightGold.c1, brightGold.c2, brightGold.hl, brightGold.sp, false)
       )
       const codexH = codexSprites[0].scale.y
       yPos = -codexMargin + codexH / 2
       for (const s of codexSprites) {
         s.position.set(0, yPos, 0)
-        scene.add(s)
+        contentGroup.add(s)
         sprites.push(s)
         yPos -= codexH + gapY
       }
@@ -448,7 +499,7 @@ export function OriginalScene({
       const nameWordH = textH * 0.50
       const nameGapY = gapY * 0.8
       const nameSprites = nameWords.map(w =>
-        makeMetallicSprite(w, nameWordH, dpr, silver.c1, silver.c2, silver.hl, silver.sp)
+        makeMetallicSprite(w, nameWordH, dpr, silver.c1, silver.c2, silver.hl, silver.sp, false)
       )
 
       let nY = 0
@@ -460,7 +511,7 @@ export function OriginalScene({
       }
 
       const portfolioH = textH * 0.70
-      const portfolio = makeCanvasSprite("PORTAFOLIO", portfolioH, dpr, goldGradient)
+      const portfolio = makeCanvasSprite("PORTAFOLIO", portfolioH, dpr, goldGradient, false)
       placeRight(portfolio, 0, nY - gapY * 0.5)
       nameGroup.add(portfolio)
       sprites.push(portfolio)
@@ -470,8 +521,8 @@ export function OriginalScene({
       nameBox.getCenter(nameCenter)
       nameGroup.position.set(-nameCenter.x, -nameCenter.y, 0)
       nameGroup.position.x = -gapX * 4
-      nameGroup.position.y = vh * 0.60
-      scene.add(nameGroup)
+      nameGroup.position.y = vh * 0.52
+      contentGroup.add(nameGroup)
 
       const titleGroup = new THREE.Group()
       const titleLines = [
@@ -483,7 +534,7 @@ export function OriginalScene({
       const titleLineH = textH * 0.40
       const titleGapY = gapY * 0.4
       const titleSprites = titleLines.map(l =>
-        makeMetallicSprite(l, titleLineH, dpr, brightGold.c1, brightGold.c2, brightGold.hl, brightGold.sp)
+        makeMetallicSprite(l, titleLineH, dpr, brightGold.c1, brightGold.c2, brightGold.hl, brightGold.sp, false)
       )
 
       let tY = 0
@@ -499,8 +550,8 @@ export function OriginalScene({
       titleBox.getCenter(titleCenter)
       titleGroup.position.set(-titleCenter.x, -titleCenter.y, 0)
       titleGroup.position.x = gapX * 4
-      titleGroup.position.y = -vh * 0.60
-      scene.add(titleGroup)
+      titleGroup.position.y = -vh * 0.52
+      contentGroup.add(titleGroup)
 
       return sprites
     }
@@ -516,22 +567,31 @@ export function OriginalScene({
     }
 
     const loader = new GLTFLoader()
-    loader.load("/model.gltf", (gltf) => {
-      model = gltf.scene
-      document.fonts.ready.then(() => buildSprites(gltf)).catch(() => buildSprites(gltf))
-    })
+    loader.load(
+      "/model.gltf",
+      (gltf) => {
+        model = gltf.scene
+        document.fonts.ready.then(() => buildSprites(gltf)).catch(() => buildSprites(gltf))
+      },
+      undefined,
+      (error) => {
+        console.error("Failed to load /model.gltf, falling back to basic display.", error)
+        fireLoaded()
+      }
+    )
 
     function switchMode(mobile: boolean) {
       mode.current = mobile ? "mobile" : "desktop"
       applyCameraMode(mobile)
       if (model) {
-        clearSprites(allSprites, scene)
+        clearSprites(allSprites)
+        contentGroup.clear()
         buildSprites(model)
       }
       composer.passes.length = 0
       composer.addPass(new RenderPass(scene, camera))
-      const strength = mobile ? 0.10 : 0.15
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), strength, 0.4, 0.85))
+      bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), bloomTarget, 0.4, 0.85)
+      composer.addPass(bloomPass)
       composer.addPass(new OutputPass())
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
@@ -540,18 +600,90 @@ export function OriginalScene({
     }
 
     function onResize() {
-      const mobile = mql.matches
-      if (mobile !== (mode.current === "mobile")) {
-        switchMode(mobile)
-      }
+      // Update camera and renderer dimensions FIRST
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
       composer.setSize(window.innerWidth, window.innerHeight)
+      
+      const mobile = mql.matches
+      if (mobile !== (mode.current === "mobile")) {
+        // A mode switch is required
+        mode.current = mobile ? "mobile" : "desktop"
+        applyCameraMode(mobile)
+        if (model) {
+          clearSprites(allSprites)
+          contentGroup.clear()
+          buildSprites(model)
+        }
+        composer.passes.length = 0
+        composer.addPass(new RenderPass(scene, camera))
+        bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), bloomTarget, 0.4, 0.85)
+        composer.addPass(bloomPass)
+        composer.addPass(new OutputPass())
+      } else {
+        // Even if we don't switch mode, on desktop/mobile resize we might want to rebuild sprites
+        // to ensure perfect scaling and positioning on extreme window resizes
+        if (model) {
+          clearSprites(allSprites)
+          contentGroup.clear()
+          buildSprites(model)
+        }
+      }
     }
 
     mql.addEventListener("change", onResize)
     window.addEventListener("resize", onResize)
+
+    // Interactive Listeners
+    function onPointerMove(e: MouseEvent | TouchEvent) {
+      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX
+      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY
+      targetMouse.x = (clientX / window.innerWidth) * 2 - 1
+      targetMouse.y = -(clientY / window.innerHeight) * 2 + 1
+      
+      // Update cursor on hover over the 3D model
+      if (model && !('touches' in e)) {
+         raycaster.setFromCamera(targetMouse, camera)
+         const intersects = raycaster.intersectObject(model, true)
+         if (intersects.length > 0) {
+            if (!isHovering) {
+               isHovering = true
+               document.body.style.cursor = 'pointer'
+            }
+         } else {
+            if (isHovering) {
+               isHovering = false
+               document.body.style.cursor = 'default'
+            }
+         }
+      }
+    }
+    window.addEventListener('mousemove', onPointerMove)
+    window.addEventListener('touchmove', onPointerMove, { passive: true })
+
+    function onInteractClick(e: MouseEvent | TouchEvent) {
+      if (!model) return
+      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX
+      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY
+      const m = new THREE.Vector2(
+        (clientX / window.innerWidth) * 2 - 1,
+        -(clientY / window.innerHeight) * 2 + 1
+      )
+      raycaster.setFromCamera(m, camera)
+      const intersects = raycaster.intersectObject(model, true)
+      if (intersects.length > 0) {
+        modelSpinSpeed = 15.0 // Intense spin!
+        currentBloom = bloomTarget * 8.0 // Huge neon flash
+      }
+    }
+    window.addEventListener('mousedown', onInteractClick)
+    window.addEventListener('touchstart', onInteractClick, { passive: true })
+
+    function onScroll() {
+       scrollY = window.scrollY
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
 
     let running = true
     const clock = new THREE.Clock()
@@ -561,16 +693,67 @@ export function OriginalScene({
       requestAnimationFrame(animate)
       const delta = clock.getDelta()
       const elapsed = clock.getElapsedTime()
+      
+      const freq = RadioManager.getInstance().getFrequencies()
+      
+      // 1. Mouse Lerping for smooth follow
+      currentMouse.lerp(targetMouse, 0.05)
+
+      // 2. Parallax Camera (Scroll Dive Disabled to keep native depth static)
+      const baseZ = mode.current === "mobile" ? 18 : 12
+      
+      camera.position.x += (currentMouse.x * 2.0 - camera.position.x) * delta * 5
+      camera.position.y += ((mode.current === "mobile" ? 0 : 0.5) + currentMouse.y * 2.0 - camera.position.y) * delta * 5
+      camera.position.z += (baseZ - camera.position.z) * delta * 5
+      camera.lookAt(0, 0, 0)
+
+      // 3. Dynamic Interactive Lighting
+      pointerLight.position.set(currentMouse.x * 15, currentMouse.y * 15, 8)
+      pointerLight.intensity = THREE.MathUtils.lerp(pointerLight.intensity, 3.5, 0.02) // Fade in light
+
+      // 4. Dramatic Entrance Animation & Audio Reactivity (Pulse)
+      const bassHit = Math.pow(freq.bass, 3); // Exponential scaling for bloom
+      
+      // Calibrated audio reactivity for scaling: separate grave/medio/agudo levels
+      // Scaled and tuned to prevent the model and text sprites from overflowing the screen.
+      const bassReact = Math.pow(freq.bass, 3) * 0.08    // Subtle pulse on heavy bass kicks
+      const midReact = Math.pow(freq.mid, 2.5) * 0.04    // Smooth response to melody and vocals
+      const highReact = Math.pow(freq.high, 2) * 0.02    // Snappy micro-vibration on treble transients
+      const targetScale = 1.0 + (bassReact + midReact + highReact)
+      
+      contentGroup.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.15)
+      contentGroup.position.z = THREE.MathUtils.lerp(contentGroup.position.z, 0, 0.03)
+      contentGroup.rotation.y = THREE.MathUtils.lerp(contentGroup.rotation.y, 0, 0.03)
+
+      // 5. Reactive Stars
+      stars.rotation.x += (-currentMouse.y * 0.1 - stars.rotation.x) * 0.05
+      stars.rotation.z += (-currentMouse.x * 0.1 - stars.rotation.z) * 0.05
+      
+      const musicSpeed = Math.pow(freq.mid + freq.high, 2) * 0.01;
+      stars.rotation.y += 0.0008 + (scrollY * 0.000005) + musicSpeed // Spin faster on scroll + music
+
+      // 6. Interactive Model (Spin decay)
+      modelSpinSpeed = THREE.MathUtils.lerp(modelSpinSpeed, 0.5, 0.03)
       if (model) {
-        model.rotation.y += delta * 0.5
+        model.rotation.y += delta * modelSpinSpeed
         model.position.y = Math.sin(elapsed * 0.8) * 0.15 + 0.3
       }
+      
+      // 7. Interactive Bloom (Flash decay + Bass boost)
+      const bassBloom = bassHit * 1.5;
+      currentBloom = THREE.MathUtils.lerp(currentBloom, bloomTarget + bassBloom, 0.15)
+      bloomPass.strength = currentBloom
+
       for (const s of allSprites) {
         const st = s.userData.shaderTime
         if (st) st.value = elapsed
       }
       starMat.uniforms.time.value = elapsed
-      stars.rotation.y += 0.0008
+
+      // Peeking animation disabled for objects to keep them static as requested
+      const targetY = 0
+      contentGroup.position.y += (targetY - contentGroup.position.y) * delta * 6.0
+
       composer.render()
     }
     animate()
@@ -590,12 +773,18 @@ export function OriginalScene({
       running = false
       mql.removeEventListener("change", onResize)
       window.removeEventListener("resize", onResize)
+      window.removeEventListener('mousemove', onPointerMove)
+      window.removeEventListener('touchmove', onPointerMove)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('mousedown', onInteractClick)
+      window.removeEventListener('touchstart', onInteractClick)
       document.removeEventListener("visibilitychange", onVisibilityChange)
+      document.body.style.cursor = 'default'
       renderer.dispose()
       composer.dispose()
       container.innerHTML = ""
     }
   }, [])
 
-  return <div ref={ref} className="fixed inset-0 -z-10" />
+  return <div ref={ref} className="absolute inset-0 -z-10" />
 }

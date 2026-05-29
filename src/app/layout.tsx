@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import { Raleway } from "next/font/google"
+import "@radix-ui/themes/styles.css"
+import { Theme } from "@radix-ui/themes"
 import "./globals.css"
 
 const raleway = Raleway({

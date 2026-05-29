@@ -1,44 +1,29 @@
-# =============================================================================
-# MACROSTASIS FRONTEND - Dockerfile
-# =============================================================================
-# Multi-stage build for Angular SSR application
-# Produces an optimized nginx container serving the static build
-#
-# @author Carlos Eduardo Juárez Ricardo
-# @version 2.0.0
-# =============================================================================
+FROM node:22-alpine AS base
 
-# Stage 1: Build
-FROM node:20-alpine AS builder
-
+FROM base AS deps
 WORKDIR /app
+COPY package.json package-lock.json* yarn.lock* ./
+RUN npm ci || npm install
 
-# Copy package files
-COPY macrostasis/package*.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy source code
-COPY macrostasis/ ./
-
-# Build for production
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 RUN npm run build
 
-# Stage 2: Production
-FROM nginx:alpine AS production
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+RUN mkdir -p .next
+RUN chown nextjs:nodejs .next
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy built files from builder
-COPY --from=builder /app/dist/macrostasis/browser /usr/share/nginx/html
-
-# Copy public assets (SVG icons)
-COPY macrostasis/public/ /usr/share/nginx/html/
-
-# Expose port 80
-EXPOSE 80
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+USER nextjs
+EXPOSE 3000
+ENV PORT=3000
+CMD ["node", "server.js"]

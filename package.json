@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "cp -r public .next/standalone/ && mkdir -p .next/standalone/.next && cp -r .next/static .next/standalone/.next/",
     "start": "next start"
   },
   "dependencies": {
+    "@radix-ui/themes": "^3.3.0",
     "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.2.0",
     "@react-three/postprocessing": "^3.0.2",
