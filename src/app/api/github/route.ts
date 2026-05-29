@@ -29,6 +29,10 @@ export async function GET() {
             name
             description
             url
+            createdAt
+            owner {
+              login
+            }
             primaryLanguage {
               name
             }
@@ -42,6 +46,12 @@ export async function GET() {
                         message
                         committedDate
                         oid
+                        author {
+                          name
+                          user {
+                            login
+                          }
+                        }
                       }
                     }
                   }
@@ -97,6 +107,10 @@ export async function GET() {
           const isDefaultBranch = branchName === defaultBranchName
           const existing = recentCommitsMap.get(commit.oid)
 
+          const authorName = commit.author?.user?.login
+            ? `@${commit.author.user.login}`
+            : (commit.author?.name || "Unknown")
+
           // If commit isn't added yet, or if this instance is from the default branch, keep it
           if (!existing || isDefaultBranch) {
             recentCommitsMap.set(commit.oid, {
@@ -104,7 +118,8 @@ export async function GET() {
               committedDate: commit.committedDate,
               oid: commit.oid,
               branch: branchName,
-              isDefault: isDefaultBranch
+              isDefault: isDefaultBranch,
+              author: authorName
             })
           }
         })
@@ -119,6 +134,8 @@ export async function GET() {
         name: repo.name,
         description: repo.description,
         url: repo.url,
+        createdAt: repo.createdAt,
+        owner: repo.owner?.login || "MetaCodeX",
         primaryLanguage: repo.primaryLanguage,
         recentCommits
       }

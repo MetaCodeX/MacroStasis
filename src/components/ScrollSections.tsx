@@ -94,12 +94,15 @@ interface CommitNode {
   oid: string
   branch?: string
   isDefault?: boolean
+  author?: string
 }
 
 interface RepoNode {
   name: string
   description: string | null
   url: string
+  createdAt?: string
+  owner?: string
   primaryLanguage: {
     name: string
   } | null
@@ -341,6 +344,8 @@ function generateMockGithubData(): GithubData {
       name: "parhelion-sim",
       description: "Real-time logistics network simulator modeling fleet dispatching, road congestion, and carrier assignment",
       url: "https://github.com/MetaCodeX/parhelion-sim",
+      createdAt: new Date(Date.now() - 100 * 3600000 * 24).toISOString(),
+      owner: "MetaCodeX",
       primaryLanguage: { name: "Python" },
       recentCommits: [
         {
@@ -348,14 +353,16 @@ function generateMockGithubData(): GithubData {
           committedDate: new Date(Date.now() - 1 * 3600000 * 24).toISOString(),
           oid: "f83a210f6be7290c01a24d2719a97bcfa811cd49",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         },
         {
           message: "refactor: Optimize dynamic routing algorithms for large scale grids",
           committedDate: new Date(Date.now() - 3 * 3600000 * 24).toISOString(),
           oid: "a843b22cf283c847b7118228399a9b9cb128ef3c",
           branch: "feature/optimize",
-          isDefault: false
+          isDefault: false,
+          author: "@MetaCodeX"
         }
       ]
     },
@@ -363,6 +370,8 @@ function generateMockGithubData(): GithubData {
       name: "URMONY",
       description: "Fintech loan lifecycle engine: amortization tables, 2FA OTP, JWT cookies and encrypted PII",
       url: "https://github.com/MetaCodeX/URMONY",
+      createdAt: new Date(Date.now() - 50 * 3600000 * 24).toISOString(),
+      owner: "MetaCodeX",
       primaryLanguage: { name: "FastAPI" },
       recentCommits: [
         {
@@ -370,14 +379,16 @@ function generateMockGithubData(): GithubData {
           committedDate: new Date(Date.now() - 2 * 3600000 * 24).toISOString(),
           oid: "c82f09ba0fb82937cd21a1178229a9b3cb128ef87",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         },
         {
           message: "security: Enforce JWT HttpOnly cookies with CSRF double submit tokens",
           committedDate: new Date(Date.now() - 5 * 3600000 * 24).toISOString(),
           oid: "9f82d22cf283c847b7118228399a9b9cb128ef3c",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         }
       ]
     },
@@ -385,6 +396,8 @@ function generateMockGithubData(): GithubData {
       name: "Quantext",
       description: "Adaptive AI multi-agent orchestrator utilizing KV-cache quantization for low-memory GPU inference",
       url: "https://github.com/Caperro18/Quantext",
+      createdAt: new Date(Date.now() - 40 * 3600000 * 24).toISOString(),
+      owner: "Caperro18",
       primaryLanguage: { name: "TypeScript" },
       recentCommits: [
         {
@@ -392,14 +405,16 @@ function generateMockGithubData(): GithubData {
           committedDate: new Date(Date.now() - 4 * 3600000 * 24).toISOString(),
           oid: "d8eaa370fb82937cd21a1178229a9b3cb120a2f",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@Caperro18"
         },
         {
           message: "perf: Implement adaptive KV-cache quantization on local Llama 3 runner",
           committedDate: new Date(Date.now() - 10 * 3600000 * 24).toISOString(),
           oid: "b103e22cf283c847b7118228399a9b9cb128ef3c",
           branch: "dev",
-          isDefault: false
+          isDefault: false,
+          author: "@Caperro18"
         }
       ]
     },
@@ -407,6 +422,8 @@ function generateMockGithubData(): GithubData {
       name: "OmniDocs",
       description: "Declarative Enterprise Architecture Document Engine parsing custom notations via AST and RAG pipelines",
       url: "https://github.com/MetaCodeX/OmniDocs",
+      createdAt: new Date(Date.now() - 30 * 3600000 * 24).toISOString(),
+      owner: "MetaCodeX",
       primaryLanguage: { name: "Go" },
       recentCommits: [
         {
@@ -414,14 +431,16 @@ function generateMockGithubData(): GithubData {
           committedDate: new Date(Date.now() - 3 * 3600000 * 24).toISOString(),
           oid: "9003c570f80e7290c01a24d2719a97bcfae8110b",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         },
         {
           message: "feat: Implement AST parser for markdown directives and metadata extraction",
           committedDate: new Date(Date.now() - 5 * 3600000 * 24).toISOString(),
           oid: "aef381b1d283c847b7118228399a9b9cb1281ef1",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         }
       ]
     },
@@ -429,6 +448,8 @@ function generateMockGithubData(): GithubData {
       name: "proyecto-rio",
       description: "IoT flood forecasting system for Cazones River utilizing ESP32 ultrasonic sensors and TensorFlow Lite",
       url: "https://github.com/MetaCodeX/proyecto-rio",
+      createdAt: new Date(Date.now() - 80 * 3600000 * 24).toISOString(),
+      owner: "MetaCodeX",
       primaryLanguage: { name: "C++" },
       recentCommits: [
         {
@@ -436,14 +457,16 @@ function generateMockGithubData(): GithubData {
           committedDate: new Date(Date.now() - 6 * 3600000 * 24).toISOString(),
           oid: "82bc01a0fb82937cd21a1178229a9b3cb128ef3c",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         },
         {
           message: "refactor: Optimize ESP32 deep sleep interval based on battery telemetrics",
           committedDate: new Date(Date.now() - 12 * 3600000 * 24).toISOString(),
           oid: "732b122cf283c847b7118228399a9b9cb128efcb",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         }
       ]
     },
@@ -451,6 +474,8 @@ function generateMockGithubData(): GithubData {
       name: "parhelion-wms",
       description: "Enterprise multi-tenant Warehouse/Transportation Management System (WMS/TMS) with .NET 8 and n8n",
       url: "https://github.com/MetaCodeX/parhelion-wms",
+      createdAt: new Date(Date.now() - 90 * 3600000 * 24).toISOString(),
+      owner: "MetaCodeX",
       primaryLanguage: { name: "C#" },
       recentCommits: [
         {
@@ -458,14 +483,16 @@ function generateMockGithubData(): GithubData {
           committedDate: new Date(Date.now() - 8 * 3600000 * 24).toISOString(),
           oid: "cf2831a0fb82937cd21a1178229a9b3cb128ef87",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         },
         {
           message: "refactor: Implement multi-tenant schema isolation using EF Core global filters",
           committedDate: new Date(Date.now() - 14 * 3600000 * 24).toISOString(),
           oid: "a238222cf283c847b7118228399a9b9cb128ef3c",
           branch: "feature/multi-tenant",
-          isDefault: false
+          isDefault: false,
+          author: "@MetaCodeX"
         }
       ]
     },
@@ -473,21 +500,25 @@ function generateMockGithubData(): GithubData {
       name: "macrostasis-next",
       description: "Interactive portfolio and personal 3D web experience built with Next.js, Radix UI Themes, and Three.js",
       url: "https://github.com/MetaCodeX/macrostasis-next",
+      createdAt: new Date(Date.now() - 2 * 3600000 * 24).toISOString(),
+      owner: "MetaCodeX",
       primaryLanguage: { name: "TypeScript" },
       recentCommits: [
         {
           message: "feat: Integrate gold-themed GitHub Activity Grid and live Commit Tracker",
           committedDate: new Date().toISOString(),
-          oid: "fb904a5cf80e7290c01a24d2719a97bcfae8188ea",
+          oid: "fb904a5cf80e7290c01a24d2719a97bcfaE8188ea",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         },
         {
           message: "style: Correct footer alignment, update contact links to macrostasis.dev domain",
           committedDate: new Date(Date.now() - 2 * 3600000).toISOString(),
-          oid: "bd904a5cf80e7290c01a24d2719a97bcfae8a0d8",
+          oid: "bd904a5cf80e7290c01a24d2719a97bcfaE8a0d8",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@MetaCodeX"
         }
       ]
     },
@@ -495,21 +526,25 @@ function generateMockGithubData(): GithubData {
       name: "k3s-gitops",
       description: "GitOps infrastructure repository for self-managed K3s cluster deployments and PostgreSQL backups",
       url: "https://github.com/MetaCodeX/k3s-gitops",
+      createdAt: new Date(Date.now() - 1 * 3600000 * 24).toISOString(),
+      owner: "some-org",
       primaryLanguage: { name: "Shell" },
       recentCommits: [
         {
           message: "feat: Setup automated Traefik Ingress routing and Let's Encrypt certificates",
-          committedDate: new Date(Date.now() - 9 * 3600000 * 24).toISOString(),
+          committedDate: new Date(Date.now() - 1 * 3600000 * 24).toISOString(),
           oid: "5e3c22a0fb82937cd21a1178229a9b3cb128efd9",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@some-user"
         },
         {
           message: "cron: Schedule daily offsite backups for PostgreSQL db instances to OCI bucket",
           committedDate: new Date(Date.now() - 15 * 3600000 * 24).toISOString(),
           oid: "bd29cb1dcf283c847b7118228399a9b9cb128efcb",
           branch: "main",
-          isDefault: true
+          isDefault: true,
+          author: "@some-user"
         }
       ]
     }
@@ -810,7 +845,7 @@ function GithubSection({ lang }: { lang: 'es' | 'en' }) {
                   >
                     <Box>
                       <Flex justify="between" align="center" className="mb-3 flex-wrap gap-2">
-                        <Flex align="center" gap="2">
+                        <Flex align="center" gap="2" className="flex-wrap">
                           <IconRepo />
                           <Link 
                             href={repo.url} 
@@ -821,6 +856,32 @@ function GithubSection({ lang }: { lang: 'es' | 'en' }) {
                           >
                             {repo.name}
                           </Link>
+                          {(() => {
+                            const isCollaborator = repo.owner && repo.owner !== "MetaCodeX";
+                            const createdDate = repo.createdAt ? new Date(repo.createdAt) : null;
+                            const isNew = createdDate ? (new Date().getTime() - createdDate.getTime()) < 30 * 24 * 3600 * 1000 : false;
+                            
+                            if (isCollaborator && isNew) {
+                              return (
+                                <Badge size="1" color="blue" variant="solid" className="font-mono text-[9px] uppercase tracking-wider font-semibold">
+                                  {lang === 'es' ? 'NUEVO COLABORADOR' : 'NEW COLLABORATOR'}
+                                </Badge>
+                              )
+                            } else if (isCollaborator) {
+                              return (
+                                <Badge size="1" color="blue" variant="soft" className="font-mono text-[9px] uppercase tracking-wider font-semibold">
+                                  {lang === 'es' ? 'COLABORACIÓN' : 'COLLABORATOR'}
+                                </Badge>
+                              )
+                            } else if (isNew) {
+                              return (
+                                <Badge size="1" color="gold" variant="solid" className="font-mono text-[9px] uppercase tracking-wider font-semibold">
+                                  {lang === 'es' ? 'NUEVO REPO' : 'NEW REPO'}
+                                </Badge>
+                              )
+                            }
+                            return null;
+                          })()}
                         </Flex>
                         {repo.primaryLanguage && (
                           <Badge size="1" color="gold" variant="surface" className="font-mono">
@@ -868,6 +929,12 @@ function GithubSection({ lang }: { lang: 'es' | 'en' }) {
                                       </>
                                     )}
                                     <span className="shrink-0">{formatRelativeTime(commit.committedDate, lang)}</span>
+                                    {commit.author && (
+                                      <>
+                                        <span>•</span>
+                                        <span className="text-white/30 truncate max-w-[120px] font-mono">{commit.author}</span>
+                                      </>
+                                    )}
                                   </div>
                                 </div>
                               </div>
