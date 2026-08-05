@@ -53,26 +53,20 @@ export function PublicTelemetryHUD() {
         if (res.ok) {
           const json = await res.json();
           setData(json);
-          setConnected(true); // Conectado inmediatamente al recibir datos
+          setConnected(true);
         }
       } catch {
         // ignore
       }
     };
 
-    // Carga inicial inmediata
     loadRestData();
-
-    // Polling de respaldo cada 5 segundos
     const pollInterval = setInterval(loadRestData, 5000);
 
-    // Conexión Server-Sent Events (Stream en tiempo real)
     let eventSource: EventSource | null = null;
     try {
       eventSource = new EventSource("/api/status/public/stream");
-
       eventSource.onopen = () => setConnected(true);
-
       eventSource.onmessage = (event) => {
         try {
           const parsed = JSON.parse(event.data);
@@ -82,9 +76,8 @@ export function PublicTelemetryHUD() {
           // ignore
         }
       };
-
       eventSource.onerror = () => {
-        // Mantiene la conexión vía REST Polling si SSE falla
+        // Fallback to polling
       };
     } catch {
       // ignore
@@ -96,54 +89,53 @@ export function PublicTelemetryHUD() {
     };
   }, []);
 
-  // Evita 100% cualquier error de hidratación React #418 al no renderizar nada en el SSR inicial
   if (!mounted) {
     return null;
   }
 
   return (
-    <Box className="w-full my-8">
-      <Card className="bg-[#080d1a]/80 backdrop-blur-md border border-[#ffffff15] p-5 rounded-xl shadow-[0_0_25px_rgba(0,0,0,0.5)]">
-        {/* Header en Español */}
-        <Flex justify="between" align="center" className="mb-4 pb-3 border-b border-white/10">
-          <Flex align="center" gap="3">
-            <span className={`w-2.5 h-2.5 rounded-full ${connected ? "bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" : "bg-amber-500"}`} />
-            <Text size="2" className="font-mono tracking-[0.2em] text-white/80 uppercase font-bold">
-              Telemetría de Sistema e Infraestructura en Vivo
+    <Box className="w-full my-4 sm:my-8 px-1 sm:px-0">
+      <Card className="bg-[#080d1a]/90 backdrop-blur-md border border-[#ffffff15] p-3 sm:p-5 rounded-xl shadow-[0_0_25px_rgba(0,0,0,0.5)]">
+        {/* Header Ultra-Responsive */}
+        <Flex direction={{ initial: "column", sm: "row" }} justify="between" align={{ initial: "start", sm: "center" }} gap="3" className="mb-4 pb-3 border-b border-white/10">
+          <Flex align="center" gap="2.5" className="overflow-hidden">
+            <span className={`w-2.5 h-2.5 rounded-full flex-none ${connected ? "bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" : "bg-amber-500"}`} />
+            <Text className="font-mono tracking-wider text-white/90 uppercase font-bold text-[11px] sm:text-xs md:text-sm truncate">
+              Telemetría de Sistema en Vivo
             </Text>
           </Flex>
-          <Flex align="center" gap="2">
+          <Flex align="center" gap="2" className="flex-wrap w-full sm:w-auto justify-between sm:justify-end">
             <Badge size="1" color={connected ? "green" : "amber"} variant="surface" className="font-mono text-[9px] px-2 py-0.5">
-              {connected ? "TIEMPO REAL (STREAM)" : "CONECTANDO..."}
+              {connected ? "TIEMPO REAL" : "CONECTANDO..."}
             </Badge>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-[9px] font-mono uppercase px-2 py-0.5 rounded cursor-pointer transition-all"
+              className="bg-amber-500/20 hover:bg-amber-500/40 active:scale-95 text-amber-300 border border-amber-500/40 text-[9px] sm:text-[10px] font-mono uppercase px-2.5 py-1 rounded cursor-pointer transition-all flex items-center gap-1.5 font-bold"
             >
               🔒 Portal Grafana
             </button>
           </Flex>
         </Flex>
 
-        {/* Tarjetas Principales */}
-        <Grid columns={{ initial: "1", sm: "2", md: "4" }} gap="4" className="mb-6">
+        {/* Tarjetas Principales Adaptables */}
+        <Grid columns={{ initial: "1", sm: "2", md: "4" }} gap="3" className="mb-5">
           {/* TVCraft Minecraft */}
           <Card className="bg-[#040711] border border-emerald-500/30 p-3 rounded-lg hover:border-emerald-500/60 transition-all">
             <Flex direction="column" gap="1">
               <Flex justify="between" align="center">
-                <Text size="1" className="font-mono text-emerald-400 font-bold uppercase text-[11px] tracking-wider">
+                <Text className="font-mono text-emerald-400 font-bold uppercase text-[10px] sm:text-[11px] tracking-wider">
                   TVCraft Minecraft
                 </Text>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
               </Flex>
-              <Text size="3" className="font-mono font-black text-white mt-1">
+              <Text className="font-mono font-black text-white text-lg sm:text-xl mt-1">
                 {data ? `${data.minecraft.tps} TPS` : "20.0 TPS"}
               </Text>
-              <Flex gap="2" align="center" className="mt-1">
+              <Flex gap="2" align="center" className="mt-1 flex-wrap">
                 <Badge size="1" color="green" variant="soft" className="font-mono text-[9px]">
                   {data ? data.minecraft.mspt : "50ms"}
                 </Badge>
-                <Text size="1" className="font-mono text-white/60 text-[10px]">
+                <Text className="font-mono text-white/60 text-[9px] sm:text-[10px]">
                   {data ? `${data.minecraft.players} / ${data.minecraft.maxPlayers} jugadores` : "0 jugadores"}
                 </Text>
               </Flex>
@@ -154,15 +146,15 @@ export function PublicTelemetryHUD() {
           <Card className="bg-[#040711] border border-white/10 p-3 rounded-lg hover:border-white/30 transition-all">
             <Flex direction="column" gap="1">
               <Flex justify="between" align="center">
-                <Text size="1" className="font-mono text-amber-400 font-bold uppercase text-[11px] tracking-wider">
+                <Text className="font-mono text-amber-400 font-bold uppercase text-[10px] sm:text-[11px] tracking-wider">
                   Servidor TF2
                 </Text>
                 <span className={`w-2 h-2 rounded-full ${data?.tf2.status === "online" ? "bg-emerald-500" : "bg-white/30"}`} />
               </Flex>
-              <Text size="3" className="font-mono font-black text-white mt-1">
+              <Text className="font-mono font-black text-white text-lg sm:text-xl mt-1">
                 {data?.tf2.status === "online" ? `${data.tf2.players} Activos` : "En Espera"}
               </Text>
-              <Text size="1" className="font-mono text-white/50 text-[10px] mt-1">
+              <Text className="font-mono text-white/50 text-[9px] sm:text-[10px] mt-1">
                 {data ? `${data.tf2.players} / ${data.tf2.maxPlayers} slots` : "0 / 24 slots"}
               </Text>
             </Flex>
@@ -172,15 +164,15 @@ export function PublicTelemetryHUD() {
           <Card className="bg-[#040711] border border-cyan-500/30 p-3 rounded-lg hover:border-cyan-500/60 transition-all">
             <Flex direction="column" gap="1">
               <Flex justify="between" align="center">
-                <Text size="1" className="font-mono text-cyan-400 font-bold uppercase text-[11px] tracking-wider">
+                <Text className="font-mono text-cyan-400 font-bold uppercase text-[10px] sm:text-[11px] tracking-wider">
                   Motor MUNO!
                 </Text>
                 <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee]" />
               </Flex>
-              <Text size="3" className="font-mono font-black text-white mt-1">
+              <Text className="font-mono font-black text-white text-lg sm:text-xl mt-1">
                 Operativo
               </Text>
-              <Text size="1" className="font-mono text-white/50 text-[10px] mt-1">
+              <Text className="font-mono text-white/50 text-[9px] sm:text-[10px] mt-1">
                 {data ? data.muno.version : "v0.9.9.88"}
               </Text>
             </Flex>
@@ -190,24 +182,24 @@ export function PublicTelemetryHUD() {
           <Card className="bg-[#040711] border border-yellow-500/30 p-3 rounded-lg hover:border-yellow-500/60 transition-all">
             <Flex direction="column" gap="1">
               <Flex justify="between" align="center">
-                <Text size="1" className="font-mono text-yellow-400 font-bold uppercase text-[11px] tracking-wider">
-                  Transmisión de Radio
+                <Text className="font-mono text-yellow-400 font-bold uppercase text-[10px] sm:text-[11px] tracking-wider">
+                  Transmisión Radio
                 </Text>
                 <span className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_6px_#facc15] animate-pulse" />
               </Flex>
-              <Text size="3" className="font-mono font-black text-white mt-1">
+              <Text className="font-mono font-black text-white text-lg sm:text-xl mt-1">
                 EN VIVO 24/7
               </Text>
-              <Text size="1" className="font-mono text-yellow-400/80 text-[10px] mt-1 underline cursor-pointer" onClick={() => window.open("https://radio.macrostasis.dev", "_blank")}>
+              <Text className="font-mono text-yellow-400/80 text-[9px] sm:text-[10px] mt-1 underline cursor-pointer truncate" onClick={() => window.open("https://radio.macrostasis.dev", "_blank")}>
                 radio.macrostasis.dev ↗
               </Text>
             </Flex>
           </Card>
         </Grid>
 
-        {/* Grid de Microservicios Core */}
-        <Box className="pt-4 border-t border-white/10">
-          <Text size="1" className="font-mono text-[9px] tracking-[0.25em] text-white/40 uppercase mb-3 block">
+        {/* Grid de Microservicios Core Adaptable */}
+        <Box className="pt-3 sm:pt-4 border-t border-white/10">
+          <Text className="font-mono text-[9px] tracking-[0.2em] text-white/40 uppercase mb-2.5 block font-semibold">
             Red de Microservicios Core
           </Text>
           <Grid columns={{ initial: "2", sm: "3", md: "6" }} gap="2">
@@ -219,17 +211,18 @@ export function PublicTelemetryHUD() {
               { id: "n8n", name: "Workflows n8n", status: "operativo" },
               { id: "minio", name: "Almacenamiento MinIO S3", status: "operativo" },
             ]).map((s) => (
-              <Flex key={s.id} align="center" gap="2" className="bg-[#040711]/60 border border-white/5 px-2.5 py-1.5 rounded text-[10px] font-mono hover:border-white/15 transition-all">
+              <Flex key={s.id} align="center" gap="2" className="bg-[#040711]/60 border border-white/5 px-2 py-1.5 rounded text-[9px] sm:text-[10px] font-mono hover:border-white/15 transition-all">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/90 flex-none" />
                 <Flex direction="column" className="overflow-hidden">
-                  <Text className="text-white/80 truncate text-[10px] leading-tight">{s.name}</Text>
-                  <Text className="text-emerald-400/80 text-[8px] font-mono uppercase tracking-wider">{s.status}</Text>
+                  <Text className="text-white/85 truncate text-[9px] sm:text-[10px] leading-tight font-medium">{s.name}</Text>
+                  <Text className="text-emerald-400/90 text-[7.5px] sm:text-[8px] font-mono uppercase tracking-wider font-semibold">{s.status}</Text>
                 </Flex>
               </Flex>
             ))}
           </Grid>
         </Box>
       </Card>
+
       <GrafanaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Box>
   );

@@ -33,29 +33,29 @@ export function GrafanaModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="relative w-full max-w-6xl h-[85vh] bg-[#040711] border border-white/20 rounded-2xl overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-        {/* Header */}
-        <Flex justify="between" align="center" className="px-6 py-4 bg-[#080d1a] border-b border-white/10 flex-none">
-          <Flex align="center" gap="3">
-            <span className={`w-3 h-3 rounded-full ${authenticated ? "bg-emerald-500 shadow-[0_0_10px_#10b981]" : "bg-red-500"}`} />
-            <Heading size="3" className="font-mono tracking-wider text-white uppercase font-bold">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md">
+      <div className="relative w-[96vw] sm:w-[90vw] md:w-full md:max-w-6xl h-[90vh] sm:h-[85vh] bg-[#040711] border border-white/20 rounded-xl sm:rounded-2xl overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+        {/* Header Responsive */}
+        <Flex justify="between" align="center" className="px-3 sm:px-6 py-2.5 sm:py-4 bg-[#080d1a] border-b border-white/10 flex-none gap-2">
+          <Flex align="center" gap="2" className="overflow-hidden">
+            <span className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-none ${authenticated ? "bg-emerald-500 shadow-[0_0_10px_#10b981]" : "bg-red-500"}`} />
+            <Text className="font-mono tracking-wider text-white uppercase font-bold text-[11px] sm:text-xs md:text-sm truncate">
               Grafana Observability Portal · Privado
-            </Heading>
+            </Text>
           </Flex>
-          <IconButton variant="ghost" color="gray" onClick={onClose} className="cursor-pointer hover:bg-white/10 rounded-full">
+          <IconButton variant="ghost" color="gray" onClick={onClose} className="cursor-pointer hover:bg-white/10 rounded-full flex-none min-w-[32px] min-h-[32px]">
             ✕
           </IconButton>
         </Flex>
 
-        {/* Content */}
+        {/* Content Responsive */}
         {!authenticated ? (
-          <Flex direction="column" align="center" justify="center" className="flex-1 p-6">
-            <Card className="w-full max-w-md bg-[#080d1a]/90 border border-white/15 p-8 rounded-xl shadow-2xl">
-              <Heading size="4" className="font-mono text-center text-white mb-2 uppercase tracking-widest">
+          <Flex direction="column" align="center" justify="center" className="flex-1 p-4 sm:p-6 overflow-y-auto">
+            <Card className="w-full max-w-[92vw] sm:max-w-md bg-[#080d1a]/95 border border-white/15 p-5 sm:p-8 rounded-xl shadow-2xl">
+              <Heading size="3" className="font-mono text-center text-white mb-2 uppercase tracking-widest sm:text-lg">
                 Acceso Restringido
               </Heading>
-              <Text size="2" className="font-mono text-center text-white/50 mb-6 block">
+              <Text size="1" className="font-mono text-center text-white/60 mb-5 block sm:text-xs">
                 Introduce la clave de acceso del sistema para desbloquear Grafana.
               </Text>
 
@@ -66,26 +66,28 @@ export function GrafanaModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                     placeholder="Clave de Acceso"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="font-mono bg-black/50 border-white/20 text-white"
+                    className="font-mono bg-black/60 border-white/20 text-white text-xs sm:text-sm py-1.5"
                   />
                   {error && (
-                    <Text color="red" size="1" className="font-mono mt-2 block">
+                    <Text color="red" size="1" className="font-mono mt-2 block text-[10px] sm:text-xs">
                       Clave incorrecta. Acceso denegado.
                     </Text>
                   )}
                 </Box>
-                <Button type="submit" variant="solid" color="amber" className="font-mono uppercase tracking-widest cursor-pointer font-bold py-2">
+                <Button type="submit" variant="solid" color="amber" className="font-mono uppercase tracking-widest cursor-pointer font-bold py-2 text-xs sm:text-sm">
                   Desbloquear Grafana
                 </Button>
               </form>
             </Card>
           </Flex>
         ) : (
-          <iframe
-            src="/grafana-dashboard/"
-            className="w-full h-full border-none"
-            title="Grafana Observability"
-          />
+          <div className="w-full h-full overflow-hidden bg-black flex-1">
+            <iframe
+              src="/grafana-dashboard/"
+              className="w-full h-full border-none"
+              title="Grafana Observability"
+            />
+          </div>
         )}
       </div>
     </div>
