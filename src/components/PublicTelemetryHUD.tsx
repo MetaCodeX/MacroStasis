@@ -1,9 +1,8 @@
 "use client"
 
-import { GrafanaModal } from "./GrafanaModal"
-
 import { useEffect, useState } from "react"
 import { Box, Card, Flex, Grid, Text, Badge } from "@radix-ui/themes"
+import { GrafanaModal } from "./GrafanaModal"
 
 interface StatusData {
   timestamp: string;
@@ -42,19 +41,32 @@ interface StatusData {
 export function PublicTelemetryHUD() {
   const [data, setData] = useState<StatusData | null>(null);
   const [connected, setConnected] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
 
-    // 1. Carga inicial vía API REST
-    fetch("/api/status/public")
-      .then((res) => res.json())
-      .then((json) => setData(json))
-      .catch(() => {});
+    const loadRestData = async () => {
+      try {
+        const res = await fetch("/api/status/public");
+        if (res.ok) {
+          const json = await res.json();
+          setData(json);
+          setConnected(true); // Conectado inmediatamente al recibir datos
+        }
+      } catch {
+        // ignore
+      }
+    };
 
-    // 2. Conexión en tiempo real SSE Stream
+    // Carga inicial inmediata
+    loadRestData();
+
+    // Polling de respaldo cada 5 segundos
+    const pollInterval = setInterval(loadRestData, 5000);
+
+    // Conexión Server-Sent Events (Stream en tiempo real)
     let eventSource: EventSource | null = null;
     try {
       eventSource = new EventSource("/api/status/public/stream");
@@ -72,38 +84,27 @@ export function PublicTelemetryHUD() {
       };
 
       eventSource.onerror = () => {
-        setConnected(false);
-        eventSource?.close();
+        // Mantiene la conexión vía REST Polling si SSE falla
       };
     } catch {
-      setConnected(false);
+      // ignore
     }
 
     return () => {
+      clearInterval(pollInterval);
       eventSource?.close();
     };
   }, []);
 
-  // Evita el error de hidratación #418 de React al garantizar concordancia exacta SSR / Client initial render
+  // Evita 100% cualquier error de hidratación React #418 al no renderizar nada en el SSR inicial
   if (!mounted) {
-    return (
-      <Box className="w-full my-8 min-h-[220px]">
-        <Card className="bg-[#080d1a]/80 backdrop-blur-md border border-[#ffffff15] p-5 rounded-xl">
-          <Flex align="center" gap="3" className="mb-4 pb-3 border-b border-white/10">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/50" />
-            <Text size="2" className="font-mono tracking-[0.2em] text-white/60 uppercase font-bold">
-              Telemetría de Sistema e Infraestructura en Vivo
-            </Text>
-          </Flex>
-        </Card>
-      </Box>
-    );
+    return null;
   }
 
   return (
     <Box className="w-full my-8">
       <Card className="bg-[#080d1a]/80 backdrop-blur-md border border-[#ffffff15] p-5 rounded-xl shadow-[0_0_25px_rgba(0,0,0,0.5)]">
-        {/* Header en Español con badge de Tiempo Real */}
+        {/* Header en Español */}
         <Flex justify="between" align="center" className="mb-4 pb-3 border-b border-white/10">
           <Flex align="center" gap="3">
             <span className={`w-2.5 h-2.5 rounded-full ${connected ? "bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" : "bg-amber-500"}`} />
@@ -115,13 +116,16 @@ export function PublicTelemetryHUD() {
             <Badge size="1" color={connected ? "green" : "amber"} variant="surface" className="font-mono text-[9px] px-2 py-0.5">
               {connected ? "TIEMPO REAL (STREAM)" : "CONECTANDO..."}
             </Badge>
-            <button onClick={() => setIsModalOpen(true)} className="bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-[9px] font-mono uppercase px-2 py-0.5 rounded cursor-pointer transition-all">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-[9px] font-mono uppercase px-2 py-0.5 rounded cursor-pointer transition-all"
+            >
               🔒 Portal Grafana
             </button>
           </Flex>
         </Flex>
 
-        {/* Tarjetas Principales sin emojis y en Español */}
+        {/* Tarjetas Principales */}
         <Grid columns={{ initial: "1", sm: "2", md: "4" }} gap="4" className="mb-6">
           {/* TVCraft Minecraft */}
           <Card className="bg-[#040711] border border-emerald-500/30 p-3 rounded-lg hover:border-emerald-500/60 transition-all">
@@ -201,7 +205,7 @@ export function PublicTelemetryHUD() {
           </Card>
         </Grid>
 
-        {/* Grid de Microservicios Core en Español */}
+        {/* Grid de Microservicios Core */}
         <Box className="pt-4 border-t border-white/10">
           <Text size="1" className="font-mono text-[9px] tracking-[0.25em] text-white/40 uppercase mb-3 block">
             Red de Microservicios Core
