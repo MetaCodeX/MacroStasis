@@ -1,5 +1,7 @@
 "use client"
 
+import { GrafanaModal } from "./GrafanaModal"
+
 import { useEffect, useState } from "react"
 import { Box, Card, Flex, Grid, Text, Badge } from "@radix-ui/themes"
 
@@ -40,6 +42,7 @@ interface StatusData {
 export function PublicTelemetryHUD() {
   const [data, setData] = useState<StatusData | null>(null);
   const [connected, setConnected] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -108,9 +111,14 @@ export function PublicTelemetryHUD() {
               Telemetría de Sistema e Infraestructura en Vivo
             </Text>
           </Flex>
-          <Badge size="1" color={connected ? "green" : "amber"} variant="surface" className="font-mono text-[9px] px-2 py-0.5">
-            {connected ? "TIEMPO REAL (STREAM)" : "CONECTANDO..."}
-          </Badge>
+          <Flex align="center" gap="2">
+            <Badge size="1" color={connected ? "green" : "amber"} variant="surface" className="font-mono text-[9px] px-2 py-0.5">
+              {connected ? "TIEMPO REAL (STREAM)" : "CONECTANDO..."}
+            </Badge>
+            <button onClick={() => setIsModalOpen(true)} className="bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-[9px] font-mono uppercase px-2 py-0.5 rounded cursor-pointer transition-all">
+              🔒 Portal Grafana
+            </button>
+          </Flex>
         </Flex>
 
         {/* Tarjetas Principales sin emojis y en Español */}
@@ -218,6 +226,7 @@ export function PublicTelemetryHUD() {
           </Grid>
         </Box>
       </Card>
+      <GrafanaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Box>
   );
 }
