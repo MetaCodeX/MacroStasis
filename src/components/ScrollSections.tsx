@@ -1,5 +1,7 @@
 "use client"
 
+import { PublicTelemetryHUD } from "./PublicTelemetryHUD"
+
 import { useEffect, useRef, useState } from "react"
 import {
   Box,
@@ -1271,6 +1273,9 @@ export function ScrollSections() {
             <Heading as="h3" size="7" weight="light" style={{ letterSpacing: '0.05em' }} className="text-white/95 mb-12">
               {data.projectsTitle}
             </Heading>
+
+            <PublicTelemetryHUD />
+
 
             <Grid columns={{ initial: "1", sm: "2" }} gap="6">
               {data.projects.map((proj, idx) => {
