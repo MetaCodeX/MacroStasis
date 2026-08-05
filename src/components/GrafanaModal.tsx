@@ -82,7 +82,7 @@ export function GrafanaModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
           </Flex>
         ) : (
           <iframe
-            src="https://grafana.macrostasis.dev"
+            src="/grafana-dashboard/"
             className="w-full h-full border-none"
             title="Grafana Observability"
           />
