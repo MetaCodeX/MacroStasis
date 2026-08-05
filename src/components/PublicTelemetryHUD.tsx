@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Box, Card, Flex, Grid, Text, Badge } from "@radix-ui/themes"
 
-interface TelemetryData {
+interface StatusData {
   timestamp: string;
   minecraft: {
     status: string;
@@ -38,20 +38,23 @@ interface TelemetryData {
 }
 
 export function PublicTelemetryHUD() {
-  const [data, setData] = useState<TelemetryData | null>(null);
+  const [data, setData] = useState<StatusData | null>(null);
   const [connected, setConnected] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // 1. Carga inicial via API REST
-    fetch("/api/telemetry/public")
+    setMounted(true);
+
+    // 1. Carga inicial vía API REST
+    fetch("/api/status/public")
       .then((res) => res.json())
       .then((json) => setData(json))
       .catch(() => {});
 
-    // 2. Conexión en tiempo real Server-Sent Events (SSE / Stream)
+    // 2. Conexión en tiempo real SSE Stream
     let eventSource: EventSource | null = null;
     try {
-      eventSource = new EventSource("/api/telemetry/public/stream");
+      eventSource = new EventSource("/api/status/public/stream");
 
       eventSource.onopen = () => setConnected(true);
 
@@ -78,6 +81,22 @@ export function PublicTelemetryHUD() {
     };
   }, []);
 
+  // Evita el error de hidratación #418 de React al garantizar concordancia exacta SSR / Client initial render
+  if (!mounted) {
+    return (
+      <Box className="w-full my-8 min-h-[220px]">
+        <Card className="bg-[#080d1a]/80 backdrop-blur-md border border-[#ffffff15] p-5 rounded-xl">
+          <Flex align="center" gap="3" className="mb-4 pb-3 border-b border-white/10">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/50" />
+            <Text size="2" className="font-mono tracking-[0.2em] text-white/60 uppercase font-bold">
+              Telemetría de Sistema e Infraestructura en Vivo
+            </Text>
+          </Flex>
+        </Card>
+      </Box>
+    );
+  }
+
   return (
     <Box className="w-full my-8">
       <Card className="bg-[#080d1a]/80 backdrop-blur-md border border-[#ffffff15] p-5 rounded-xl shadow-[0_0_25px_rgba(0,0,0,0.5)]">
@@ -90,7 +109,7 @@ export function PublicTelemetryHUD() {
             </Text>
           </Flex>
           <Badge size="1" color={connected ? "green" : "amber"} variant="surface" className="font-mono text-[9px] px-2 py-0.5">
-            {connected ? "TIEMPO REAL (STREAM SSE)" : "CONECTANDO..."}
+            {connected ? "TIEMPO REAL (STREAM)" : "CONECTANDO..."}
           </Badge>
         </Flex>
 

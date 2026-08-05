@@ -1,6 +1,7 @@
 "use client"
 
-import { PublicTelemetryHUD } from "./PublicTelemetryHUD"
+import dynamic from "next/dynamic"
+const PublicTelemetryHUD = dynamic(() => import("./PublicTelemetryHUD").then((m) => m.PublicTelemetryHUD), { ssr: false })
 
 import { useEffect, useRef, useState } from "react"
 import {
