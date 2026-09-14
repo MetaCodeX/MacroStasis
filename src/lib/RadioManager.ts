@@ -83,38 +83,58 @@ export class RadioManager {
     this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
   }
 
+  reconnectDelay = 3000;
+
   connectWS() {
      if (typeof window === 'undefined') return;
      if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) return;
 
-     this.ws = new WebSocket('wss://radio.macrostasis.dev/ws');
+     try {
+         this.ws = new WebSocket('wss://radio.macrostasis.dev/ws');
+     } catch (e) {
+         console.warn("[RadioManager] WebSocket initialization error:", e);
+         setTimeout(() => this.connectWS(), this.reconnectDelay);
+         this.reconnectDelay = Math.min(this.reconnectDelay * 1.5, 30000);
+         return;
+     }
      
      this.ws.onopen = () => {
+         this.reconnectDelay = 3000;
          this.setMode(this.mode);
      };
      
+     this.ws.onerror = (e) => {
+         // Silently handle WS errors to prevent console spam
+         console.warn("[RadioManager] WebSocket error encountered");
+     };
+     
      this.ws.onmessage = async (e) => {
-         const data = JSON.parse(e.data);
-         if (data.type === 'now_playing' && this.mode === 'radio') {
-             this.trackInfo = { artist: data.artist, title: data.title, artwork: data.artwork };
-             this.notify();
-         } else if (data.type === 'session') {
-             this.token = data.token;
-             if (this.token) localStorage.setItem('radio_token', this.token);
-             if (data.state && data.state.current && this.mode === 'playlist') {
-                 this.trackInfo = { title: data.state.current.name, artist: "TroubleMaker Playlist", artwork: data.state.current.artwork };
-                 this.playUrl('https://radio.macrostasis.dev' + data.state.current.url + '?cb=' + Date.now());
+         try {
+             const data = JSON.parse(e.data);
+             if (data.type === 'now_playing' && this.mode === 'radio') {
+                 this.trackInfo = { artist: data.artist, title: data.title, artwork: data.artwork };
+                 this.notify();
+             } else if (data.type === 'session') {
+                 this.token = data.token;
+                 if (this.token) localStorage.setItem('radio_token', this.token);
+                 if (data.state && data.state.current && this.mode === 'playlist') {
+                     this.trackInfo = { title: data.state.current.name, artist: "TroubleMaker Playlist", artwork: data.state.current.artwork };
+                     this.playUrl('https://radio.macrostasis.dev' + data.state.current.url + '?cb=' + Date.now());
+                 }
+                 this.notify();
+             } else if (data.type === 'track' && this.mode === 'playlist') {
+                 this.trackInfo = { title: data.name, artist: "TroubleMaker Playlist", artwork: data.artwork };
+                 this.playUrl('https://radio.macrostasis.dev' + data.url + '?cb=' + Date.now());
+                 this.notify();
              }
-             this.notify();
-         } else if (data.type === 'track' && this.mode === 'playlist') {
-             this.trackInfo = { title: data.name, artist: "TroubleMaker Playlist", artwork: data.artwork };
-             this.playUrl('https://radio.macrostasis.dev' + data.url + '?cb=' + Date.now());
-             this.notify();
+         } catch (err) {
+             console.warn("[RadioManager] Error parsing WS message:", err);
          }
      }
      
      this.ws.onclose = () => {
-         setTimeout(() => this.connectWS(), 3000);
+         setTimeout(() => this.connectWS(), this.reconnectDelay);
+         this.reconnectDelay = Math.min(this.reconnectDelay * 1.5, 30000);
      }
   }
 

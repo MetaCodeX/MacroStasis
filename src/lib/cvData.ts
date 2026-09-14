@@ -206,6 +206,15 @@ export const cvData: { es: CVData; en: CVData } = {
           "Portafolio interactivo premium con fondo de constelación 3D dinámico, HUD de radio de música cibernético completamente interactivo integrado con Radix UI.",
           "Optimizado para accesibilidad, SEO y fluidez de rendimiento, expuesto de forma segura mediante túneles de Cloudflare."
         ]
+      },
+      {
+        name: "Kimeraware Landing Page",
+        status: "EXHIBICIÓN",
+        stack: ["Three.js", "WebSockets", "Node.js", "HLS Stream", "GLTF/GLB", "Analog Horror"],
+        description: [
+          "Web interactiva con tecnología Three.js y sistemas de broadcasting multimedia sincronizados en tiempo real mediante WebSockets (1 de junio – 13 de abril).",
+          "Experiencia 3D con shaders analógicos CRT y orquestación de eventos. Acceso oficial retirado; disponible únicamente en modo exhibición vía https://kimeraware.macrostasis.dev/v3."
+        ]
       }
     ],
     techStackTitle: "Stack Técnico",
@@ -392,6 +401,15 @@ export const cvData: { es: CVData; en: CVData } = {
         description: [
           "Premium interactive portfolio featuring a dynamic 3D constellation background, fully interactive cyber radio HUD built with Radix UI Themes.",
           "Optimized for accessibility, SEO, and smooth rendering performance, securely exposed using Cloudflare Tunnels."
+        ]
+      },
+      {
+        name: "Kimeraware Landing Page",
+        status: "EXHIBIT",
+        stack: ["Three.js", "WebSockets", "Node.js", "HLS Stream", "GLTF/GLB", "Analog Horror"],
+        description: [
+          "Interactive web experience built with Three.js and real-time synchronized multimedia broadcasting over WebSockets (June 1st – April 13th).",
+          "3D experience with analog CRT shaders and dynamic event orchestration. Official access retired; preserved exclusively in showcase mode at https://kimeraware.macrostasis.dev/v3."
         ]
       }
     ],

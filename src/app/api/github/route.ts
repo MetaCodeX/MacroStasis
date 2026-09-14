@@ -37,7 +37,7 @@ export async function GET(request: Request) {
             }
           }
         }
-        repositories(first: 10, privacy: PUBLIC, orderBy: {field: PUSHED_AT, direction: DESC}) {
+        repositories(first: 30, privacy: PUBLIC, orderBy: {field: PUSHED_AT, direction: DESC}) {
           nodes {
             name
             description

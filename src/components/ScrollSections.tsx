@@ -1328,6 +1328,14 @@ export function ScrollSections() {
                           </li>
                         ))}
                       </ul>
+
+                      {proj.name.toLowerCase().includes("kimeraware") && (
+                        <div className="my-4 py-2.5 px-4 rounded border border-red-600/40 bg-red-950/25 text-center shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                          <span className="font-mono text-[13px] tracking-[0.25em] font-bold text-red-500 uppercase animate-pulse drop-shadow-[0_0_8px_rgba(239,68,68,0.9)] [text-shadow:0_0_8px_#ef4444,0_0_16px_#dc2626]">
+                            ALIMENTA LA KIMERA
+                          </span>
+                        </div>
+                      )}
                     </Box>
 
                     <Box className="pt-4 border-t border-white/5 flex justify-between align-center">
@@ -1346,6 +1354,7 @@ export function ScrollSections() {
                             {proj.name === "Parhelion Logistics" && (lang === 'es' ? "Backend distribuido en .NET 8 y FastAPI. Integración de n8n para análisis automatizados, enrutamiento geoespacial Haversine y sincronización móvil." : "Distributed backend in .NET 8 and FastAPI. n8n integration for automated analytics, Haversine geospatial routing, and mobile sync.")}
                             {proj.name === "Parhelion Simulator" && (lang === 'es' ? "Modela el despacho de flotas, congestión vial y asignación de transportistas en tiempo real mediante algoritmos heurísticos y FastAPI." : "Models fleet dispatching, road congestion, and carrier assignment in real time using heuristic algorithms and FastAPI.")}
                             {proj.name === "MacroStasis Portfolio" && (lang === 'es' ? "Portafolio web responsivo de alto rendimiento que integra reactividad basada en señales y renderizado 3D." : "High-performance responsive web portfolio integrating signal-based reactivity and 3D rendering.")}
+                            {proj.name.includes("Kimeraware") && (lang === 'es' ? "Renderizado 3D en Three.js con shaders CRT retro, interceptores de WebSockets para streaming HLS sincronizado multi-cliente y transiciones procedurales de audio y video." : "Three.js 3D rendering with retro CRT shaders, WebSocket interceptors for multi-client synchronized HLS streaming, and procedural audio/video transitions.")}
                           </Text>
                         </HoverCard.Content>
                       </HoverCard.Root>
@@ -1359,6 +1368,11 @@ export function ScrollSections() {
                         {proj.name === "MacroStasis Portfolio" && (
                           <Link href="https://macrostasis.dev" target="_blank" size="1" color="gold" className="flex items-center gap-1 hover:underline">
                             {lang === 'es' ? "Ver sitio" : "Visit site"} <IconExternal />
+                          </Link>
+                        )}
+                        {proj.name.includes("Kimeraware") && (
+                          <Link href="https://kimeraware.macrostasis.dev/v3" target="_blank" size="1" color="gold" className="flex items-center gap-1 hover:underline">
+                            {lang === 'es' ? "Ver exhibición (v3)" : "View showcase (v3)"} <IconExternal />
                           </Link>
                         )}
                       </Flex>
