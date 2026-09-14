@@ -108,7 +108,7 @@ export const cvData: { es: CVData; en: CVData } = {
         role: "Programador Jr — Migración ERP Odoo 18",
         company: "Procesos y Empacados de Veracruz (PEV) · Contrato temporal",
         location: "La Antigua, Veracruz de Ignacio de la Llave, México · Presencial",
-        period: "Sept 2026 – Actualidad · 1 mes",
+        period: "Sept 2026 – Presente",
         highlights: [
           "Migración de software deprecado hacia el ERP moderno Odoo 18 orientado a sistemas de gestión agroindustrial, trazabilidad y procesamiento cárnico (Rastro TIF y transformación).",
           "Desarrollo de modelos de datos para control de mermas, decomisos, integración de básculas industriales y sincronización de inventario.",
@@ -120,7 +120,7 @@ export const cvData: { es: CVData; en: CVData } = {
         role: "Desarrollador Full Stack & Arquitecto de Sistemas",
         company: "Microfinanciera Inpulso + URMONY Platform",
         location: "Poza Rica, MX",
-        period: "Ene 2025 – Presente",
+        period: "Ene 2025 – Jun 2026",
         highlights: [
           "Desarrolló y desplegó URMONY: plataforma completa de ciclo de vida de préstamos con tablas de amortización, calculadora de intereses moratorios, 2FA OTP, cookies JWT HttpOnly, PII cifrado y recibos en PDF.",
           "Diseñó la plataforma web administrativa interna para las operaciones diarias de la fintech (backend Node.js / PHP).",
@@ -317,7 +317,7 @@ export const cvData: { es: CVData; en: CVData } = {
         role: "Junior Software Developer — Odoo 18 ERP Migration",
         company: "Procesos y Empacados de Veracruz (PEV) · Temporary contract",
         location: "La Antigua, Veracruz, Mexico · On-site",
-        period: "Sep 2026 – Present · 1 mo",
+        period: "Sep 2026 – Present",
         highlights: [
           "Migration of deprecated software to modern Odoo 18 ERP focused on agro-industrial management, traceability, and meat processing (TIF Slaughterhouse and Transformation).",
           "Data modeling for yield loss, condemnations, industrial scale integration, and real-time inventory synchronization.",
@@ -329,7 +329,7 @@ export const cvData: { es: CVData; en: CVData } = {
         role: "Full Stack Developer & Systems Architect",
         company: "Microfinanciera Inpulso + URMONY Platform",
         location: "Poza Rica, MX",
-        period: "Jan 2025 – Present",
+        period: "Jan 2025 – Jun 2026",
         highlights: [
           "Built and deployed URMONY: full loan lifecycle platform with amortization tables, moratory interest scheduler, 2FA OTP, JWT HttpOnly cookies, encrypted PII and PDF receipts.",
           "Designed the internal admin web platform for the fintech's daily operations (Node.js / PHP backend).",
