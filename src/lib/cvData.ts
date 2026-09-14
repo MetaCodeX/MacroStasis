@@ -105,6 +105,18 @@ export const cvData: { es: CVData; en: CVData } = {
     experienceTitle: "Experiencia Profesional",
     experience: [
       {
+        role: "Programador Jr — Migración ERP Odoo 18",
+        company: "Procesos y Empacados de Veracruz (PEV) · Contrato temporal",
+        location: "La Antigua, Veracruz de Ignacio de la Llave, México · Presencial",
+        period: "Sept 2026 – Actualidad · 1 mes",
+        highlights: [
+          "Migración de software deprecado hacia el ERP moderno Odoo 18 orientado a sistemas de gestión agroindustrial, trazabilidad y procesamiento cárnico (Rastro TIF y transformación).",
+          "Desarrollo de modelos de datos para control de mermas, decomisos, integración de básculas industriales y sincronización de inventario.",
+          "Implementación de lógica de negocio avanzada con Python ORM, vistas XML dinámicas y optimización de flujos operativos.",
+          "Integración de servicios y terminales en planta mediante APIs XML-RPC."
+        ]
+      },
+      {
         role: "Desarrollador Full Stack & Arquitecto de Sistemas",
         company: "Microfinanciera Inpulso + URMONY Platform",
         location: "Poza Rica, MX",
@@ -220,8 +232,9 @@ export const cvData: { es: CVData; en: CVData } = {
     techStackTitle: "Stack Técnico",
     techStack: [
       { category: "Lenguajes", items: ["Python", "C# (.NET 8)", "Go", "JavaScript / TypeScript", "C++", "Java", "HTML5 / CSS3"] },
-      { category: "Backend", items: [".NET 8 (C#)", "FastAPI (Python)", "Go (Golang)", "Node.js / Express", "PHP", "APIs RESTful", "Clean Architecture", "DDD (Domain-Driven Design)", "Microservicios"] },
+      { category: "Backend", items: ["Odoo 18 (Python ORM)", ".NET 8 (C#)", "FastAPI (Python)", "Go (Golang)", "Node.js / Express", "PHP", "APIs RESTful", "Clean Architecture", "DDD (Domain-Driven Design)", "Microservicios"] },
       { category: "Frontend", items: ["Next.js (App Router)", "React", "Angular 18", "React Native (Expo)", "Three.js", "Tailwind CSS", "Radix UI Themes", "Ionic"] },
+      { category: "ERP & Agroindustria", items: ["Odoo 18 (Python ORM)", "Vistas XML y Modelado de Datos", "Trazabilidad Cárnica & Rastro TIF", "Integraciones XML-RPC", "Odoo 15 Legacy"] },
       { category: "Bases de Datos & Caché", items: ["PostgreSQL", "InfluxDB (Telemetría IoT)", "Redis (Caché & Colas)", "MySQL", "SQL Server", "SQLite", "MongoDB"] },
       { category: "DevOps & Nube", items: ["Docker & Docker Compose", "K3s / Kubernetes", "Linux (Ubuntu / Debian)", "Nginx", "Cloudflare Tunnels", "Tailscale Mesh VPN", "OCI (Oracle Cloud)", "DigitalOcean", "CI/CD Pipelines (Jenkins / GitHub Actions)"] },
       { category: "IA & Automatización", items: ["Agentes de IA Autónomos", "n8n Automation Workflows", "LangGraph / LangChain", "RAG (Retrieval-Augmented Generation)", "Cuantización de Modelos (KV-Cache)", "APIs de LLM (Claude / Gemini / Ollama / Groq)", "Webhooks de Eventos", "Self-Healing Workflows"] },
@@ -300,6 +313,18 @@ export const cvData: { es: CVData; en: CVData } = {
     ],
     experienceTitle: "Professional Experience",
     experience: [
+      {
+        role: "Junior Software Developer — Odoo 18 ERP Migration",
+        company: "Procesos y Empacados de Veracruz (PEV) · Temporary contract",
+        location: "La Antigua, Veracruz, Mexico · On-site",
+        period: "Sep 2026 – Present · 1 mo",
+        highlights: [
+          "Migration of deprecated software to modern Odoo 18 ERP focused on agro-industrial management, traceability, and meat processing (TIF Slaughterhouse and Transformation).",
+          "Data modeling for yield loss, condemnations, industrial scale integration, and real-time inventory synchronization.",
+          "Advanced business logic implementation using Python ORM, dynamic XML views, and operational workflow optimization.",
+          "Plant-floor hardware and terminal integrations via XML-RPC APIs."
+        ]
+      },
       {
         role: "Full Stack Developer & Systems Architect",
         company: "Microfinanciera Inpulso + URMONY Platform",
@@ -416,8 +441,9 @@ export const cvData: { es: CVData; en: CVData } = {
     techStackTitle: "Tech Stack",
     techStack: [
       { category: "Languages", items: ["Python", "C# (.NET 8)", "Go", "JavaScript / TypeScript", "C++", "Java", "HTML5 / CSS3"] },
-      { category: "Backend", items: [".NET 8 (C#)", "FastAPI (Python)", "Go (Golang)", "Node.js / Express", "PHP", "RESTful APIs", "Clean Architecture", "DDD (Domain-Driven Design)", "Microservices"] },
+      { category: "Backend", items: ["Odoo 18 (Python ORM)", ".NET 8 (C#)", "FastAPI (Python)", "Go (Golang)", "Node.js / Express", "PHP", "RESTful APIs", "Clean Architecture", "DDD (Domain-Driven Design)", "Microservices"] },
       { category: "Frontend", items: ["Next.js (App Router)", "React", "Angular 18", "React Native (Expo)", "Three.js", "Tailwind CSS", "Radix UI Themes", "Ionic"] },
+      { category: "ERP & Agro-Industry", items: ["Odoo 18 (Python ORM)", "XML Views & Data Modeling", "Meat Traceability & TIF Operations", "XML-RPC Integrations", "Odoo 15 Legacy"] },
       { category: "Databases & Cache", items: ["PostgreSQL", "InfluxDB (IoT Telemetry)", "Redis (Cache & Queues)", "MySQL", "SQL Server", "SQLite", "MongoDB"] },
       { category: "DevOps & Cloud", items: ["Docker & Docker Compose", "K3s / Kubernetes", "Linux (Ubuntu / Debian)", "Nginx", "Cloudflare Tunnels", "Tailscale Mesh VPN", "OCI (Oracle Cloud)", "DigitalOcean", "CI/CD Pipelines (Jenkins / GitHub Actions)"] },
       { category: "AI & Automation", items: ["Autonomous AI Agents", "n8n Automation Workflows", "LangGraph / LangChain", "RAG (Retrieval-Augmented Generation)", "Model Quantization (KV-Cache)", "LLM APIs (Claude / Gemini / Ollama / Groq)", "Event Webhooks", "Self-Healing Workflows"] },
