@@ -236,16 +236,21 @@ function OilPaintedWindowFrame() {
         <meshBasicMaterial color="#eef4ff" opacity={0.65} transparent />
       </mesh>
 
-      {/* Deep drop shadow under window sill with soft oil feathering */}
-      <mesh position={[0, -windowHeight / 2 - 0.8, 0.01]}>
-        <planeGeometry args={[sillWidth - 0.04, 1.45]} />
-        <meshBasicMaterial color="#000000" />
+      {/* Soft-blended oil drop shadow under window sill */}
+      <mesh position={[0, -windowHeight / 2 - 0.55, 0.005]}>
+        <planeGeometry args={[sillWidth - 0.06, 0.95]} />
+        <meshBasicMaterial color="#060912" opacity={0.62} transparent />
+      </mesh>
+      {/* Subtle darker core immediately under sill lip */}
+      <mesh position={[0, -windowHeight / 2 - 0.16, 0.01]}>
+        <planeGeometry args={[sillWidth - 0.08, 0.22]} />
+        <meshBasicMaterial color="#020306" opacity={0.78} transparent />
       </mesh>
 
-      {/* Pitch black oil glaze behind window panes */}
+      {/* Deep dark oil glaze behind window panes */}
       <mesh position={[0, 0, -0.04]}>
         <planeGeometry args={[windowWidth - 0.09, windowHeight - 0.09]} />
-        <meshBasicMaterial color="#010205" />
+        <meshBasicMaterial color="#020409" />
       </mesh>
     </group>
   );
