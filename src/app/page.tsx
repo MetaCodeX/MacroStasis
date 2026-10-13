@@ -3,7 +3,8 @@
 import dynamic from "next/dynamic";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useState, useEffect } from "react";
-import { CuratorBroadcastHUD } from "@/components/CuratorBroadcastHUD";
+import * as THREE from "three";
+import { CuratorAudioBridge } from "@/components/CuratorAudioBridge";
 
 const DarkRoomWindowScene = dynamic(
   () =>
@@ -21,14 +22,19 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative w-screen h-screen overflow-hidden bg-[#03050a] select-none">
-      {/* Background 3D Canvas with camera pulled back */}
+    <main className="relative w-screen h-screen overflow-hidden bg-black select-none cursor-default">
+      {/* 3D Canvas rendering master artwork integration with volumetric 3D lighting */}
       <div className="absolute inset-0 z-0">
         {mounted && (
           <Canvas
-            camera={{ position: [0, 0, 4.4], fov: 55 }}
-            dpr={[1, 1.5]}
-            gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+            camera={{ position: [0, 0, 4.4], fov: 60 }}
+            dpr={[1, 2]}
+            gl={{
+              antialias: true,
+              alpha: false,
+              powerPreference: "high-performance",
+              toneMapping: THREE.NoToneMapping,
+            }}
           >
             <Suspense fallback={null}>
               <DarkRoomWindowScene />
@@ -37,11 +43,8 @@ export default function Home() {
         )}
       </div>
 
-      {/* Atmospheric Vignette Overlay */}
-      <div className="pointer-events-none absolute inset-0 z-10 bg-radial-[circle_at_center,transparent_45%,rgba(2,3,6,0.9)_100%]" />
-
-      {/* Discreet HUD with only icons */}
-      <CuratorBroadcastHUD />
+      {/* Invisible Audio Synchronizer */}
+      <CuratorAudioBridge />
     </main>
   );
 }
